@@ -16,6 +16,8 @@ class Cloud_Server:
         self.socket.bind("tcp://*:%s" % Global_Var.CLOUD_PORT)
         print("Cloud Server: Bind to port:" + "tcp://*:%s" % Global_Var.CLOUD_PORT)
         self.computation = Cloud_Computation()
+        
+        self.CHECKOUT=False
 
 
     def run(self):
@@ -24,7 +26,17 @@ class Cloud_Server:
             message = self.socket.recv().decode("utf-8")
             print("Cloud Server: Received request:", message)
             time.sleep(1)
-            if message != "Quit":
+            
+            if message=="checkout???" :
+                reply = str(self.CHECKOUT)
+                print("Cloud Server:", reply)
+                self.socket.send_string(reply)
+            elif message=="checkout":
+                self.CHECKOUT=True
+                reply = self.computation.getReply(message)
+                print("Cloud Server:", reply)
+                self.socket.send_string(reply)
+            elif message != "Quit":
                 reply = self.computation.getReply(message)
                 print("Cloud Server:", reply)
                 self.socket.send_string(reply)

@@ -13,17 +13,31 @@ class Edge_Client:
         self.socket = self.context.socket(zmq.REQ)
         self.socket.connect("tcp://" + Global_Var.FOG_IP + ":%s" % Global_Var.FOG_PORT)
         print("Edge Client: connect to port: tcp://" + Global_Var.FOG_IP + ":%s" % Global_Var.FOG_PORT)
+        self.SCAN=False
 
 
     def run(self):
         while True:
             try:
-                request = str(input("Request: "))
+                if self.SCAN:
+                    merchandise = {"sample1":5,"sample2":6}
+                    request = str(merchandise)
+                else:
+                    request = "checkout???"
+                    
                 self.socket.send_string(request)
                 print("Edge Client: Sending request to the Fog:", request)
                 #  Get the reply.
                 message = self.socket.recv().decode("utf-8")
                 print ("Edge Client: Received reply from the Fog:", message)
+                
+                if message=="True":
+                    #scan shopping cart
+                    self.SCAN = True
+                    
+                
+                
+                
                 if request == "Quit":
                     if message != "Bye":
                         print("Edge Client: The Fog Server might not quit properly.")

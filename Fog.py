@@ -13,15 +13,20 @@ class Fog:
         self.frontend = self.context.socket(zmq.REQ)
         # self.frontend.setsockopt(zmq.SNDTIMEO, 2)   # Timeout: 2 sec
         # self.frontend.setsockopt(zmq.LINGER, 2)
+        
+      
+        
         self.frontend.connect("tcp://" + Global_Var.CLOUD_IP + ":%s" % Global_Var.CLOUD_PORT)
         print("Fog: frontend (cloud) connect to port: tcp://" + Global_Var.CLOUD_IP + ":%s" % Global_Var.CLOUD_PORT)
+
+
 
         # Socket facing edge devices
         self.backend = self.context.socket(zmq.REP)
         self.backend.bind("tcp://*:%s" % Global_Var.FOG_PORT)
         print("Fog: backend (edge) bind port: tcp://*:%s" % Global_Var.FOG_PORT)
-
-
+        
+       
     def run(self):
         while True:
             try:
