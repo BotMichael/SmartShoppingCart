@@ -1,0 +1,5 @@
+Water|0.97
+Icecream|4.9
+Apple|1.0
+Orange|4.99
+Milk Tea|6.75

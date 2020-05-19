@@ -1,0 +1,5 @@
+Water|A12
+Icecream|B16
+Apple|F2
+Orange|F2
+Milk Tea|I3
