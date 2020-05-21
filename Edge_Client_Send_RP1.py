@@ -1,5 +1,9 @@
-# Edge_Client.py
+# Edge_Client_RP1.py
+'''
+    Detect face & user interaction
+    Send:
 
+'''
 from TFLite_detection_face import face_activate
 
 

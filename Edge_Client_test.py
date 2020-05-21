@@ -1,10 +1,14 @@
-# Edge_Client.py
-
+# Edge_Client_test.py
+'''
+    for testing fog's and cloud's functionality
+'''
 import zmq
 import sys
 import time
 import Global_Var
 
+template = '{{ "device": "{}", "event": "{}", "content" : "{}" }}'
+# message = template.format('rpi1_1', 'sed', '{}')
 
 class Edge_Client:
     def __init__(self):
@@ -23,8 +27,10 @@ class Edge_Client:
                     merchandise = {"sample1":5,"sample2":6}
                     request = str(merchandise)
                 else:
-                    request = "checkout???"
-                    
+                    # request = "checkout???"
+                    request = input("Enter pseudo edge request:")
+
+
                 self.socket.send_string(request)
                 print("Edge Client: Sending request to the Fog:", request)
                 #  Get the reply.

@@ -35,6 +35,12 @@ class Fog:
                 print("Fog Server: Received request from Edge:", message_edge)
                 time.sleep(1)
 
+                if message_edge == "Quit":
+                    message_to_edge = "Bye"
+                    self.backend.send_string(message_to_edge)
+                    print("Fog Server: Send reply to the Edge:", message_to_edge)
+                    continue
+
                 # Pass the message to the Cloud
                 request = message_edge
                 self.frontend.send_string(request)

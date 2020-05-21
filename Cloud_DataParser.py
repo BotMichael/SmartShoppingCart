@@ -1,6 +1,6 @@
 # Cloud_ComputeData.py
 
-Position_file = "./Data/Position.txt"
+Position_file = "./Data/Item_Region.txt"
 Price_file = "./Data/Price.txt"
 Account_file = "./Data/Account.txt"
 

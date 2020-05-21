@@ -1,5 +1,7 @@
-# Edge_Client.py
-
+# Edge_Client_RP2.py
+'''
+    Checking out.
+'''
 from TFLite_detection_image import get_item_dictionary
 
 

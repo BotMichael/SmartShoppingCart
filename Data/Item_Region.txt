@@ -1,16 +1,16 @@
-water,A
-wine glass,B
-knife,C 
-bowl,C
-frisbee,D
-hair drier,E
-broccoli,F
-carrot,F
-apple,G
-banana,G
-laptop,I
-keyboard,I
-book,H
-cake,J
-tv,K
-potted plant,L
+water|A
+wine glass|B
+knife|C
+bowl|C
+frisbee|D
+hair drier|E
+broccoli|F
+carrot|F
+apple|G
+banana|G
+laptop|I
+keyboard|I
+book|H
+cake|J
+tv|K
+potted plant|L
