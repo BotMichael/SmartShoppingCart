@@ -1,5 +1,9 @@
 # Edge_Client.py
 
+from TFLite_detection_image import get_item_dictionary
+
+
+
 import zmq
 import sys
 import time
@@ -18,7 +22,7 @@ class Edge_Client:
     def run(self):
         while True:
             try:
-                request = str(input("Request: "))
+                request = str(get_item_dictionary())
                 self.socket.send_string(request)
                 print("Edge Client: Sending request to the Fog:", request)
                 #  Get the reply.
