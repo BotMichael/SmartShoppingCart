@@ -2,9 +2,10 @@
 
 from . import Cloud_DataParser
 from .get_path import MarketMap
+from .Error_code import *
 
 
-template = "{'event':'{}', 'status':{}, 'content':{}}"
+
 
 class Cloud_Computation:
     def __init__(self):
@@ -15,45 +16,38 @@ class Cloud_Computation:
         self.MarketMap = MarketMap(self.pos_dict)
 
 
-    def getReply(self, msg):
-        assert isinstance(msg, dict)
+    def getRecommandPath(self, userID, password):
+        if not self._log_in(userID, password):
+            return ERR_001, {"msg": ERR_MSG[ERR_001]}
 
-        if msg["event"] == "login":
-            content = eval(msg["content"])
-            userID = content["userID"]
-            password = content["password"]
-            if self._log_in(userID, password):
-                items = self._get_hist(userID)
-                if items == []:
-                    path = self.MarketMap.default_path_to_items()
-                else:
-                    path = self.MarketMap.path_to_items(items)
-                response = template.format("login",0,"{{'path': '{}'}}".format(str(path)))
-            else:
-                response = template.format("login",1,"{'msg': 'wrong username or password'}")
-            return response
+        items = self._get_hist(userID)
+        if items == []:
+            path = self.MarketMap.default_path_to_items()
+        else:
+            path = self.MarketMap.path_to_items(items)
 
-        if msg["event"] == "path":
-            content = eval(msg["content"])
-            current_position = content["current_position"]
-            item = content["item"]
-            path = self.MarketMap.path_to_item(current_position, item)
-            response = template.format("path", 0, "{{'path': '{}'}}".format(str(path)))
-            return response
-
-        if msg["event"] == "scan":
-            content = eval(msg["content"])
-            items = content["item"]
-            price, detail = self._calculate_price(items)
-            response = template.format("scan", 0, "{{'price': '{}', 'item': '{}'}}".format(price, str(detail)))
-            return response
+        return SUC_000, {'path': path}
 
 
-        if msg["event"] == "checkout":
-            content = eval(msg["content"])
-            items = content["item"]
-            status = self._check_out()
-            return status
+    def getPath(self, current_position, item):
+        path = self.MarketMap.path_to_item(current_position, item)
+        return SUC_000, {'path': path}
+
+
+    def getPrice(self, items):
+        price, item = self._calculate_price(items)
+        return SUC_000, {"price": price, "item": item}
+
+
+    def getCheckOut(self, userID, password, price, items):
+        if not self._log_in(userID, password):
+            return ERR_001, {"msg": ERR_MSG[ERR_001]}
+
+        if not self._check_out(userID, price):
+            return ERR_002, {"msg": ERR_MSG[ERR_002]}
+
+        self._store_shopping(items)
+        return SUC_000, {"msg": ERR_MSG[SUC_000]}
 
 
 
@@ -79,8 +73,6 @@ class Cloud_Computation:
     def _check_out(self):
         return 0
 
-    def _store_shopping(self):
+    def _store_shopping(self, items):
         pass
 
-    def _transaction(self):
-        pass

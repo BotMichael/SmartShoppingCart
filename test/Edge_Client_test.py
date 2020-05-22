@@ -8,12 +8,14 @@ import time
 import os
 sys.path.append(os.getcwd())
 import Global_Var
+from src.edge.Edge_Client_Interface import Edge_Client_Interface
 
 template = '{{ "device": "{}", "event": "{}", "content" : "{}" }}'
 # message = template.format('rpi1_1', 'sed', '{}')
 
-class Edge_Client:
+class Edge_Client(Edge_Client_Interface):
     def __init__(self):
+        Edge_Client_Interface.__init__(self, "test_000")
         print("Edge client starts. ")
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REQ)

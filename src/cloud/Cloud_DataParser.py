@@ -1,9 +1,12 @@
 # Cloud_ComputeData.py
 
-Position_file = "../../Data/Item_Region.txt"
-Price_file = "../../Data/Price.txt"
-Account_file = "../../Data/Account.txt"
-History_file = "../../Data/Shopping_History.txt"
+Position_file = "Data/Item_Region.txt"
+Price_file = "Data/Price.txt"
+Account_file = "Data/Account.txt"
+History_file = "Data/Shopping_History.txt"
+
+
+
 
 def _parser(filename: str, parse_account = False) -> dict:
     result = dict()

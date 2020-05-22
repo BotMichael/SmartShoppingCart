@@ -6,7 +6,7 @@ import time
 import Global_Var
 from src.cloud.Cloud_Computation import Cloud_Computation
 
-template = '{{ "event": "{}", "content" : "{}" }}'
+template = "{{ 'event':'{}', 'status':{}, 'content':{} }}"
 
 class Cloud_Server:
     def __init__(self):
@@ -38,36 +38,47 @@ class Cloud_Server:
         print("Cloud Server: Send reply to the Fog:", reply)
 
 
+    def getReply(self, msg):
+        assert isinstance(msg, dict)
+
+        if msg["event"] == "login":
+            userID = msg["content"]["userID"]
+            password = msg["content"]["password"]
+            status, content = self.computation.getRecommandPath(userID, password)
+            return template.format("login", status, content)
+
+
+        if msg["event"] == "path":
+            current_position = msg["content"]["current_position"]
+            item = msg["content"]["item"]
+            status, content = self.computation.getPath(current_position, item)
+            return template.format("path", status, content)
+
+
+        if msg["event"] == "scan":
+            items = msg["content"]["item"]
+            status, content = self.computation.getPrice(items)
+            return template.format("scan", status, content)
+
+
+        if msg["event"] == "checkout":
+            userID = msg["content"]["userID"]
+            password = msg["content"]["password"]
+            price = msg["content"]["price"]
+            items = msg["content"]["item"]
+
+            status, content = self.computation.getCheckOut(userID, password, price, items)
+            return template.format("checkout", status, content)
+
 
     def run(self):
         while True:
             #  Wait for next request from client
             request = self.getRequestFromFog()
-
-            ## TODO: classify reply
-            reply = self.computation(eval(request))
+            msg = eval(request)
+            reply = self.getReply(msg)
             print("Cloud Server:", reply)
-            
-
-            # if message=="checkout???" :
-            #     reply = str(self.CHECKOUT)
-            #     print("Cloud Server:", reply)
-            #     self.socket.send_string(reply)
-            # elif message=="checkout":
-            #     self.CHECKOUT=True
-            #     reply = self.computation.getReply(message)
-            #     print("Cloud Server:", reply)
-            #     self.socket.send_string(reply)
-            # elif message != "Quit":
-            #     reply = self.computation.getReply(message)
-            #     print("Cloud Server:", reply)
-            #     self.socket.send_string(reply)
-            # else:
-            #     print("Cloud Server: Quit")
-            #     self.socket.send_string("Bye")
-            #     print("Cloud Server: Bye")
-            #     break
-
+            self.sendReplyToFog(reply)
 
 
     def __del__(self):

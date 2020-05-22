@@ -82,8 +82,9 @@ class Fog:
             except Exception as e:
                 print("Fog Server: Error occurs when talking to the Cloud Server/Edge Client. Please restart the Fog Server.")
                 print("Fog Server: ", e)
-                if request == "Quit":
-                    break
+                break
+                # if request == "Quit":
+                #     break
 
 
 
