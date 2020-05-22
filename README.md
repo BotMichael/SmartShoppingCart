@@ -1,9 +1,31 @@
-
 Edge Computing System  
-* Cloud_Server.py
-* Fog.py
-* Edge_Client_Send_RP1.py
-* Edge_Client_Send_RP2.py
+©À©¤©¤ data
+©¦   ©À©¤©¤ Account.txt
+©¦   ©À©¤©¤ Item_Region.txt
+©¦   ©¸©¤©¤ Price.txt
+©À©¤©¤ src
+©¦   ©À©¤©¤ cloud
+©¦   ©¦   ©À©¤©¤ Cloud_Computation.py
+©¦   ©¦   ©À©¤©¤ Cloud_DataParser.py
+©¦   ©¦   ©¸©¤©¤ get_path.py
+©¦   ©¸©¤©¤ edge
+©¦       ©À©¤©¤ Sample_TFLite_model
+©¦       ©¦   ©À©¤©¤ detect.tflite
+©¦       ©¦   ©¸©¤©¤ labelmap.txt
+©¦       ©À©¤©¤ Edge_Client_Interface.py
+©¦       ©À©¤©¤ TFLite_detection_face.py
+©¦       ©¸©¤©¤ TFLite_detection_image.py
+©À©¤©¤ test
+©¦   ©¸©¤©¤ Edge_Client_test.py
+©¦       ©À©¤©¤ Item_Region.txt
+©¦       ©¸©¤©¤ Price.txt
+©À©¤©¤ Cloud_Server.py
+©À©¤©¤ Edge_Client_Send_RP1.py
+©À©¤©¤ Edge_Client_Send_RP2.py
+©À©¤©¤ Fog.py
+©À©¤©¤ Global_Var.py
+©¸©¤©¤ README.md
+
 
 Process:  
 1. start cloud
@@ -23,5 +45,8 @@ Process:
         * return list of items and count for each item
         
 Current Merchandise List
-* Data/Item_Region.txt
+* data/Item_Region.txt
 
++++++++++++++++++++++++++
+¡¤5.21 
+- Update server model and message transmission
