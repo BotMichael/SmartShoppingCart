@@ -13,10 +13,11 @@ from src.edge.Edge_Client_Interface import Edge_Client_Interface
 template = '{{ "device": "{}", "event": "{}", "content" : "{}" }}'
 # message = template.format('rpi1_1', 'sed', '{}')
 
-class Edge_Client(Edge_Client_Interface):
+class Edge_Client_Test(Edge_Client_Interface):
     def __init__(self):
-        Edge_Client_Interface.__init__(self, "test_000")
-        print("Edge client starts. ")
+        device_id = input("Input device id: ")
+        Edge_Client_Interface.__init__(self, device_id)
+        print("Edge Test client", device_id, "starts. ")
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REQ)
         self.socket.connect("tcp://" + Global_Var.FOG_IP + ":%s" % Global_Var.FOG_PORT)
@@ -27,29 +28,31 @@ class Edge_Client(Edge_Client_Interface):
     def run(self):
         while True:
             try:
-                if self.SCAN:
-                    merchandise = {"sample1":5,"sample2":6}
-                    request = str(merchandise)
-                else:
-                    # request = "checkout???"
-                    request = input("Enter pseudo edge request:")
+                # if self.SCAN:
+                #     merchandise = {"sample1":5,"sample2":6}
+                #     request = str(merchandise)
+                # else:
+                #     # request = "checkout???"
+                #     request = input("Enter pseudo edge request:")
 
 
-                self.socket.send_string(request)
-                print("Edge Client: Sending request to the Fog:", request)
-                #  Get the reply.
-                message = self.socket.recv().decode("utf-8")
-                print ("Edge Client: Received reply from the Fog:", message)
+                # self.socket.send_string(request)
+                # print("Edge Client: Sending request to the Fog:", request)
+                # #  Get the reply.
+                # message = self.socket.recv().decode("utf-8")
+                # print ("Edge Client: Received reply from the Fog:", message)
                 
-                if message=="True":
-                    #scan shopping cart
-                    self.SCAN = True
-                    
-                
-                
+                # if message=="True":
+                #     #scan shopping cart
+                #     self.SCAN = True
+
+
+                request = input("Input request: ")
+                self.sendRequestToFog(request)
+                reply = self.getReplyFromFog()
                 
                 if request == "Quit":
-                    if message != "Bye":
+                    if reply != "Bye":
                         print("Edge Client: The Fog Server might not quit properly.")
                     break
             except Exception as e:
@@ -59,13 +62,7 @@ class Edge_Client(Edge_Client_Interface):
                     break
 
 
-    def __del__(self):
-        print("Edge Client terminates.")
-        self.socket.setsockopt(zmq.LINGER, 0)
-        self.socket.close()
-        self.context.term()
-
 
 if __name__ == "__main__":
-    e = Edge_Client()
+    e = Edge_Client_Test()
     e.run()
