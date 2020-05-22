@@ -76,6 +76,7 @@ class Cloud_Server:
             #  Wait for next request from client
             request = self.getRequestFromFog()
             msg = eval(request)
+            print(msg)
             reply = self.getReply(msg)
             print("Cloud Server:", reply)
             self.sendReplyToFog(reply)

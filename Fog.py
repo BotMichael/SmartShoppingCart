@@ -41,7 +41,7 @@ class Fog:
         message = self.backend.recv_multipart()
         frame, message_edge = (message[0].decode("utf-8"), message[1].decode("utf-8"))
         print("Fog Server: Received request from Edge", frame, ":", message_edge)
-        return message_edge
+        return frame, message_edge
 
 
     def getReplyFromCloud(self):
