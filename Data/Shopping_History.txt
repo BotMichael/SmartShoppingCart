@@ -1,0 +1,2 @@
+userID|item1|5|item2|10
+userID|item1|3|item2|1

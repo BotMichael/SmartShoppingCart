@@ -45,7 +45,7 @@ class Cloud_Server:
             request = self.getRequestFromFog()
 
             ## TODO: classify reply
-            reply = self.computation(request)
+            reply = self.computation(eval(request))
             print("Cloud Server:", reply)
             
 

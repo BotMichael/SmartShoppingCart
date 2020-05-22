@@ -1,9 +1,9 @@
 # Cloud_ComputeData.py
 
-Position_file = "./Data/Item_Region.txt"
-Price_file = "./Data/Price.txt"
-Account_file = "./Data/Account.txt"
-
+Position_file = "../../Data/Item_Region.txt"
+Price_file = "../../Data/Price.txt"
+Account_file = "../../Data/Account.txt"
+History_file = "../../Data/Shopping_History.txt"
 
 def _parser(filename: str, parse_account = False) -> dict:
     result = dict()
@@ -32,3 +32,14 @@ def updateAccount(Id: str, name: str, password: str) -> int:
         return 1
     else:
         return 0
+
+
+## TODO: find a better way to read data
+def getUserHistry(userID:str):
+    with open(History_file) as f:
+        items = []
+        for line in f:
+            line = line.strip().split("|")
+            if line[0] == userID:
+                items.append([line[i] for i in range(1,len(line),2)])
+        return items

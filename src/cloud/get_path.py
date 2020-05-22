@@ -56,8 +56,19 @@ class MarketMap():
                 steps.append(self.MARKET[row_c-i-1][col_t])
 
         return steps
-    
-    
+
+    ## TODO
+    def default_path_to_items(self) -> ["path"]:
+        '''Assume start from A '''
+        return ["A", "B", "D"]
+
+    ## TODO: shortest path to items
+    def path_to_items(self, items : ["item"]) -> ["path"]:
+        '''Assume start from A '''
+
+        return ["A", "F", "G"]
+
+
 # def test1():
 #     assert get_item_region("apple")=="G" , "ERROR1"
 #     assert get_item_region("water")=="A" , "ERROR2"
