@@ -1,31 +1,83 @@
 Edge Computing System  
 Edge Computing System  
 ├── data
+
+
 │   ├── Account.txt
+
+
 │   ├── Item_Region.txt
+
+
 │   └── Price.txt
+
+
 ├── src
+
+
 │   ├── cloud
+
+
 │   │   ├── Cloud_Computation.py
+
+
 │   │   ├── Cloud_DataParser.py
+
+
 │   │   └── get_path.py
+
+
 │   └── edge
+
+
 │       ├── Sample_TFLite_model
+
+
 │       │   ├── detect.tflite
+
+
 │       │   └── labelmap.txt
+
+
 │       ├── Edge_Client_Interface.py
+
+
 │       ├── TFLite_detection_face.py
+
+
 │       └── TFLite_detection_image.py
+
+
 ├── test
+
+
 │   └── Edge_Client_test.py
+
+
 │       ├── Item_Region.txt
+
+
 │       └── Price.txt
+
+
 ├── Cloud_Server.py
+
+
 ├── Edge_Client_Send_RP1.py
+
+
 ├── Edge_Client_Send_RP2.py
+
+
 ├── Fog.py
+
+
 ├── Global_Var.py
+
+
 └── README.md
+
+
 
 
 Process:  
