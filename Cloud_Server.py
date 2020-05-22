@@ -16,7 +16,7 @@ class Cloud_Server:
         self.socket.setsockopt(zmq.LINGER, 3000)      # The message will remain in the socket for 3 seconds if failing to send to the cloud 
         self.socket.bind("tcp://*:%s" % Global_Var.CLOUD_PORT)
         print("Cloud Server: Bind to port:" + "tcp://*:%s" % Global_Var.CLOUD_PORT)
-        self.computation = Cloud_Computation()
+        # self.computation = Cloud_Computation()
         
         # self.CHECKOUT=False
 
@@ -29,7 +29,8 @@ class Cloud_Server:
             time.sleep(1)
 
             ## TODO: classify reply
-            reply = self.computation(message)
+            # reply = self.computation(message)
+            reply = message
             print("Cloud Server:", reply)
             self.socket.send_string(reply)
 
