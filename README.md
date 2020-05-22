@@ -1,30 +1,31 @@
 Edge Computing System  
-©À©¤©¤ data
-©¦   ©À©¤©¤ Account.txt
-©¦   ©À©¤©¤ Item_Region.txt
-©¦   ©¸©¤©¤ Price.txt
-©À©¤©¤ src
-©¦   ©À©¤©¤ cloud
-©¦   ©¦   ©À©¤©¤ Cloud_Computation.py
-©¦   ©¦   ©À©¤©¤ Cloud_DataParser.py
-©¦   ©¦   ©¸©¤©¤ get_path.py
-©¦   ©¸©¤©¤ edge
-©¦       ©À©¤©¤ Sample_TFLite_model
-©¦       ©¦   ©À©¤©¤ detect.tflite
-©¦       ©¦   ©¸©¤©¤ labelmap.txt
-©¦       ©À©¤©¤ Edge_Client_Interface.py
-©¦       ©À©¤©¤ TFLite_detection_face.py
-©¦       ©¸©¤©¤ TFLite_detection_image.py
-©À©¤©¤ test
-©¦   ©¸©¤©¤ Edge_Client_test.py
-©¦       ©À©¤©¤ Item_Region.txt
-©¦       ©¸©¤©¤ Price.txt
-©À©¤©¤ Cloud_Server.py
-©À©¤©¤ Edge_Client_Send_RP1.py
-©À©¤©¤ Edge_Client_Send_RP2.py
-©À©¤©¤ Fog.py
-©À©¤©¤ Global_Var.py
-©¸©¤©¤ README.md
+Edge Computing System  
+â”œâ”€â”€ data
+â”‚   â”œâ”€â”€ Account.txt
+â”‚   â”œâ”€â”€ Item_Region.txt
+â”‚   â””â”€â”€ Price.txt
+â”œâ”€â”€ src
+â”‚   â”œâ”€â”€ cloud
+â”‚   â”‚   â”œâ”€â”€ Cloud_Computation.py
+â”‚   â”‚   â”œâ”€â”€ Cloud_DataParser.py
+â”‚   â”‚   â””â”€â”€ get_path.py
+â”‚   â””â”€â”€ edge
+â”‚       â”œâ”€â”€ Sample_TFLite_model
+â”‚       â”‚   â”œâ”€â”€ detect.tflite
+â”‚       â”‚   â””â”€â”€ labelmap.txt
+â”‚       â”œâ”€â”€ Edge_Client_Interface.py
+â”‚       â”œâ”€â”€ TFLite_detection_face.py
+â”‚       â””â”€â”€ TFLite_detection_image.py
+â”œâ”€â”€ test
+â”‚   â””â”€â”€ Edge_Client_test.py
+â”‚       â”œâ”€â”€ Item_Region.txt
+â”‚       â””â”€â”€ Price.txt
+â”œâ”€â”€ Cloud_Server.py
+â”œâ”€â”€ Edge_Client_Send_RP1.py
+â”œâ”€â”€ Edge_Client_Send_RP2.py
+â”œâ”€â”€ Fog.py
+â”œâ”€â”€ Global_Var.py
+â””â”€â”€ README.md
 
 
 Process:  
@@ -48,5 +49,5 @@ Current Merchandise List
 * data/Item_Region.txt
 
 +++++++++++++++++++++++++
-¡¤5.21 
+ï¹ž5.21 
 - Update server model and message transmission
