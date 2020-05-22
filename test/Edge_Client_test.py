@@ -23,43 +23,35 @@ class Edge_Client_Test(Edge_Client_Interface):
         self.socket.connect("tcp://" + Global_Var.FOG_IP + ":%s" % Global_Var.FOG_PORT)
         print("Edge Client: connect to port: tcp://" + Global_Var.FOG_IP + ":%s" % Global_Var.FOG_PORT)
         self.SCAN=False
+        self.test_case = {}
+        self.make_test_case()
 
+    def make_test_case(self):
+        self.test_case["test_login_suc"] = template.format(self.id, "login", {"userID": "ID", "password": "password"})
+        self.test_case["test_login_err"] = template.format(self.id, "login", {"userID": "noneuser", "password": "password"})
 
     def run(self):
         while True:
             try:
-                # if self.SCAN:
-                #     merchandise = {"sample1":5,"sample2":6}
-                #     request = str(merchandise)
-                # else:
-                #     # request = "checkout???"
-                #     request = input("Enter pseudo edge request:")
-
-
-                # self.socket.send_string(request)
-                # print("Edge Client: Sending request to the Fog:", request)
-                # #  Get the reply.
-                # message = self.socket.recv().decode("utf-8")
-                # print ("Edge Client: Received reply from the Fog:", message)
-                
-                # if message=="True":
-                #     #scan shopping cart
-                #     self.SCAN = True
-
-
                 request = input("Input request: ")
-                self.sendRequestToFog(request)
-                reply = self.getReplyFromFog()
-                
-                if request == "Quit":
-                    if reply != "Bye":
-                        print("Edge Client: The Fog Server might not quit properly.")
+                if request.startswith("test"):
+                    self.sendRequestToFog(self.test_case[request])
+                elif request == "Quit":
+                    self.sendRequestToFog(request)
+
+                reply = self.getReplyFromFog()[1]
+                if reply != "Bye":
+                    print("Edge Client: The Fog Server might not quit properly.")
                     break
+                elif reply == "Quit":
+                    break
+
             except Exception as e:
                 print("Edge Client: Error occurs when talking to the Fog Server. Please restart the Edge Client.")
                 print("Edge Client:", e)
-                if request == "Quit":
-                    break
+                # if request == "Quit":
+                #     break
+                break
 
 
 

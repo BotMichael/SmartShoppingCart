@@ -25,11 +25,11 @@ class Fog:
         self.backend.bind("tcp://*:%s" % Global_Var.FOG_PORT)
         print("Fog: backend (edge) bind port: tcp://*:%s" % Global_Var.FOG_PORT)
 
-
+        # self.frames = {}
 
     def sendReplyToEdge(self, frame: str, reply: str):
         self.backend.send_multipart([frame.encode(), reply.encode()])
-        print("Fog Server: Send reply to the Edge:", frame, reply)
+        print("Fog Server: Send reply to the Edge", frame, ":", reply)
 
 
     def sendRequestToCloud(self, request: str):
@@ -39,14 +39,15 @@ class Fog:
 
     def getRequestFromEdge(self) -> ("frame", "reply"):
         message = self.backend.recv_multipart()
-        message_edge = (message[0].decode("utf-8"), message[1].decode("utf-8"))
-        print("Fog Server: Received request from Edge:", message_edge)
+        frame, message_edge = (message[0].decode("utf-8"), message[1].decode("utf-8"))
+        print("Fog Server: Received request from Edge", frame, ":", message_edge)
         return message_edge
 
 
     def getReplyFromCloud(self):
         message_cloud = self.frontend.recv().decode("utf-8")
         print ("Fog Server: Received reply from the Cloud:", message_cloud)
+        return message_cloud
 
 
 
@@ -56,30 +57,34 @@ class Fog:
         while True:
             try:
                 # Receive message from the Edge first
-                message_edge = self.backend.recv().decode("utf-8")
-                print("Fog Server: Received request from Edge:", message_edge)
+                frame, message_edge = self.getRequestFromEdge()
                 time.sleep(1)
 
                 if message_edge == "Quit":
                     message_to_edge = "Bye"
-                    self.backend.send_string(message_to_edge)
-                    print("Fog Server: Send reply to the Edge:", message_to_edge)
+                    self.sendReplyToEdge(frame, message_to_edge)
                     continue
 
                 # Pass the message to the Cloud
                 request = message_edge
-                self.frontend.send_string(request)
-                print("Fog Server: Sending request to the Cloud:", request)
+                self.sendRequestToCloud(request)
+
                 #  Get the reply from the cloud.
-                message_cloud = self.frontend.recv().decode("utf-8")
-                print ("Fog Server: Received reply from the Cloud:", message_cloud)
-                self.backend.send_string(message_cloud)
-                print ("Fog Server: Send reply to the Edge:", message_cloud)
+                message_cloud = self.getReplyFromCloud()
+
+                self.sendReplyToEdge(frame, message_cloud)
+
                 if request == "Quit":
                     if message_cloud != "Bye":
                         print("Fog Server: The Cloud Server might not quit properly.")
                     break
             except Exception as e:
+                # TODO
+                # for all frame connected, self.sendReplyToEdge(frame, "Quit")
+                # for f in self.frames:
+                #     if self.frames[f]:
+                #         self.sendReplyToEdge(f, "Quit")
+
                 print("Fog Server: Error occurs when talking to the Cloud Server/Edge Client. Please restart the Fog Server.")
                 print("Fog Server: ", e)
                 break
