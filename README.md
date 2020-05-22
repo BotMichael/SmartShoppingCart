@@ -1,10 +1,8 @@
 Edge Computing System  
 Edge Computing System  
 ├── data
-
 │   ├── Account.txt
-
-│   ├── Item_Region.txt
+<br>│   ├── Item_Region.txt
 
 │   └── Price.txt
 
