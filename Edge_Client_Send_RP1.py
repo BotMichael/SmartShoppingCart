@@ -4,35 +4,25 @@
     Send:
 
 '''
-from TFLite_detection_face import face_activate
+from src.edge.TFLite_detection_face import face_activate
+from src.edge.Edge_Client_Interface import Edge_Client_Interface
 
 
-import zmq
-import sys
-import time
-import Global_Var
 
-
-class Edge_Client:
+class Edge_Client_RP1(Edge_Client_Interface):
     def __init__(self):
-        print("Edge client starts. ")
-        self.context = zmq.Context()
-        self.socket = self.context.socket(zmq.REQ)
-        self.socket.connect("tcp://" + Global_Var.FOG_IP + ":%s" % Global_Var.FOG_PORT)
-        print("Edge Client: connect to port: tcp://" + Global_Var.FOG_IP + ":%s" % Global_Var.FOG_PORT)
+        Edge_Client_Interface.__init__(self, "rpi1_000")
         self.ACTIVATE = False
         self.LOGIN = False
 
 
     def run(self):
-        
         while True:
             try:
                 while not self.ACTIVATE:
                     request = str(face_activate())
                     if request=="activate_system":
-                        self.socket.send_string(request)
-                        message = self.socket.recv().decode("utf-8")
+                        message = self.getReplyFromFog()
                         self.ACTIVATE = True
                         while not self.LOGIN:
                             info = []
@@ -40,17 +30,15 @@ class Edge_Client:
 #                             self.socket.send_string(request_name)
                             request_pw = str(input('Please set your password:'))
                             info=[request_name,request_pw]
-                            self.socket.send_string(str(info))
+                            self.sendRequestToFog(str(info))
                             self.LOGIN = True
-                            message = self.socket.recv().decode("utf-8")
+                            message = self.getReplyFromFog()
                       
                 
                 request = str(input('request:'))
-                self.socket.send_string(request)
-                print("Edge Client: Sending request to the Fog:", request)
+                self.sendRequestToFog(request)
                 #  Get the reply.
-                message = self.socket.recv().decode("utf-8")
-                print ("Edge Client: Received reply from the Fog:", message)
+                message = self.getReplyFromFog()
                 if request == "Quit":
                     if message != "Bye":
                         print("Edge Client: The Fog Server might not quit properly.")
@@ -62,13 +50,6 @@ class Edge_Client:
                     break
 
 
-    def __del__(self):
-        print("Edge Client terminates.")
-        self.socket.setsockopt(zmq.LINGER, 0)
-        self.socket.close()
-        self.context.term()
-
-
 if __name__ == "__main__":
-    e = Edge_Client()
+    e = Edge_Client_RP1()
     e.run()

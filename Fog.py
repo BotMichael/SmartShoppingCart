@@ -5,28 +5,53 @@ import sys
 import time
 import Global_Var
 
+
 class Fog:
     def __init__(self):
         print("Fog Server starts. Fog Client starts.")
         self.context = zmq.Context()
+
+        #####
         # Socket facing cloud
         self.frontend = self.context.socket(zmq.REQ)
         # self.frontend.setsockopt(zmq.SNDTIMEO, 2)   # Timeout: 2 sec
         # self.frontend.setsockopt(zmq.LINGER, 2)
-        
-      
-        
         self.frontend.connect("tcp://" + Global_Var.CLOUD_IP + ":%s" % Global_Var.CLOUD_PORT)
         print("Fog: frontend (cloud) connect to port: tcp://" + Global_Var.CLOUD_IP + ":%s" % Global_Var.CLOUD_PORT)
 
-
-
+        #####
         # Socket facing edge devices
-        self.backend = self.context.socket(zmq.REP)
+        self.backend = self.context.socket(zmq.ROUTER)
         self.backend.bind("tcp://*:%s" % Global_Var.FOG_PORT)
         print("Fog: backend (edge) bind port: tcp://*:%s" % Global_Var.FOG_PORT)
-        
-       
+
+
+
+    def sendReplyToEdge(self, frame: str, reply: str):
+        self.backend.send_multipart([frame.encode(), reply.encode()])
+        print("Fog Server: Send reply to the Edge:", frame, reply)
+
+
+    def sendRequestToCloud(self, request: str):
+        self.frontend.send_string(request)
+        print("Fog Server: Sending request to the Cloud:", request)
+
+
+    def getRequestFromEdge(self) -> ("frame", "reply"):
+        message = self.backend.recv_multipart()
+        message_edge = (message[0].decode("utf-8"), message[1].decode("utf-8"))
+        print("Fog Server: Received request from Edge:", message_edge)
+        return message_edge
+
+
+    def getReplyFromCloud(self):
+        message_cloud = self.frontend.recv().decode("utf-8")
+        print ("Fog Server: Received reply from the Cloud:", message_cloud)
+
+
+
+
+    # TODO: change run function       
     def run(self):
         while True:
             try:
@@ -61,6 +86,7 @@ class Fog:
                     break
 
 
+
     def __del__(self):
         print("Fog Server terminates. Fog Client terminates.")
         self.frontend.setsockopt(zmq.LINGER, 0)
@@ -68,6 +94,7 @@ class Fog:
         self.backend.setsockopt(zmq.LINGER, 0)
         self.backend.close()
         self.context.term()
+
 
 
 if __name__ == "__main__":

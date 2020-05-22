@@ -5,6 +5,8 @@
 import zmq
 import sys
 import time
+import os
+sys.path.append(os.getcwd())
 import Global_Var
 
 template = '{{ "device": "{}", "event": "{}", "content" : "{}" }}'
