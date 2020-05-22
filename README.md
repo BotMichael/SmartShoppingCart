@@ -1,54 +1,30 @@
 Edge Computing System  
-Edge Computing System  
-├── data
-│   ├── Account.txt
+<br>├── data
+<br>│   ├── Account.txt
 <br>│   ├── Item_Region.txt
-
-│   └── Price.txt
-
-├── src
-
-│   ├── cloud
-
-│   │   ├── Cloud_Computation.py
-
-│   │   ├── Cloud_DataParser.py
-
-│   │   └── get_path.py
-
-│   └── edge
-
-│       ├── Sample_TFLite_model
-
-│       │   ├── detect.tflite
-
-│       │   └── labelmap.txt
-
-│       ├── Edge_Client_Interface.py
-
-│       ├── TFLite_detection_face.py
-
-│       └── TFLite_detection_image.py
-
-├── test
-
-│   └── Edge_Client_test.py
-
-│       ├── Item_Region.txt
-
-│       └── Price.txt
-
-├── Cloud_Server.py
-
-├── Edge_Client_Send_RP1.py
-
-├── Edge_Client_Send_RP2.py
-
-├── Fog.py
-
-├── Global_Var.py
-
-└── README.md
+<br>│   └── Price.txt
+<br>├── src
+<br>│   ├── cloud
+<br>│   │   ├── Cloud_Computation.py
+<br>│   │   ├── Cloud_DataParser.py
+<br>│   │   └── get_path.py
+<br>│   └── edge
+<br>│       ├── Sample_TFLite_model
+<br>│       │   ├── detect.tflite
+<br>│       │   └── labelmap.txt
+<br>│       ├── Edge_Client_Interface.py
+<br>│       ├── TFLite_detection_face.py
+<br>│       └── TFLite_detection_image.py
+<br>├── test
+<br>│   └── Edge_Client_test.py
+<br>│       ├── Item_Region.txt
+<br>│       └── Price.txt
+<br>├── Cloud_Server.py
+<br>├── Edge_Client_Send_RP1.py
+<br>├── Edge_Client_Send_RP2.py
+<br>├── Fog.py
+<br>├── Global_Var.py
+<br>└── README.md
 
 
 
