@@ -5,6 +5,7 @@
 from src.edge.TFLite_detection_image import get_item_dictionary
 from src.edge.Edge_Client_Interface import Edge_Client_Interface
 
+template = '{{ "device": "{}", "event": "{}", "content" : {} }}'
 
 class Edge_Client_RP2(Edge_Client_Interface):
     def __init__(self):
@@ -14,10 +15,13 @@ class Edge_Client_RP2(Edge_Client_Interface):
     def run(self):
         while True:
             try:
-                request = str(get_item_dictionary())
-                self.sendRequestToFog(request)
-                #  Get the reply.
+                # wait for "activate"
                 message = self.getReplyFromFog()
+
+                # send request
+                request = template.format(self.id, "scan", {"item": get_item_dictionary()})
+                self.sendRequestToFog(request)
+
                 if request == "Quit":
                     if message != "Bye":
                         print("Edge Client: The Fog Server might not quit properly.")
