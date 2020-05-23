@@ -40,6 +40,8 @@ class Edge_Client_Test(Edge_Client_Interface):
     def run(self):
         while True:
             try:
+                reply = self.getReplyFromFog()[1]
+
                 request = input("Input request: ")
                 if request.startswith("test"):
                     self.sendRequestToFog(self.test_case[request])
@@ -48,7 +50,6 @@ class Edge_Client_Test(Edge_Client_Interface):
                 else:
                     self.sendRequestToFog(request)
 
-                reply = self.getReplyFromFog()[1]
                 if reply == "Bye":
                     print("Edge Client: The Fog Server might not quit properly.")
                     break

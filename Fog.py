@@ -25,7 +25,8 @@ class Fog:
         self.backend.bind("tcp://*:%s" % Global_Var.FOG_PORT)
         print("Fog: backend (edge) bind port: tcp://*:%s" % Global_Var.FOG_PORT)
 
-        # self.frames = {}
+        self.frames = {}
+        self.frame_pair = {}
 
     def sendReplyToEdge(self, frame: str, reply: str):
         self.backend.send_multipart([frame.encode(), reply.encode()])
@@ -41,6 +42,7 @@ class Fog:
         message = self.backend.recv_multipart()
         frame, message_edge = (message[0].decode("utf-8"), message[1].decode("utf-8"))
         print("Fog Server: Received request from Edge", frame, ":", message_edge)
+        self.frames[frame] = True
         return frame, message_edge
 
 
@@ -49,22 +51,47 @@ class Fog:
         print ("Fog Server: Received reply from the Cloud:", message_cloud)
         return message_cloud
 
+    ## TODO: not work properly now
+    def disconnetAllFrame(self):
+        for f in self.frames:
+            if self.frames[f]:
+                self.sendReplyToEdge(f, "Bye")
 
 
+    def filter(self, frame, message_edge):
+        try:  # tcl dbq # want to do filter here
+            msg_dict = eval(message_edge)
+        except Exception as e:
+            self.sendReplyToEdge(frame, str({"status": 22, "content": {"msg": e}}))
+        else:
+            return msg_dict
 
-    # TODO: change run function       
+    ## TODO: make it security & reliable
     def run(self):
         while True:
             try:
                 # Receive message from the Edge first
                 frame, message_edge = self.getRequestFromEdge()
-                time.sleep(1)
 
                 if message_edge == "Quit":
                     message_to_edge = "Bye"
                     self.sendReplyToEdge(frame, message_to_edge)
+                    del self.frames[frame]
                     continue
 
+                msg_dict = self.filter(frame, message_edge)
+                if msg_dict == None:
+                    continue
+
+                if msg_dict["event"].lower() == "activate":
+                    # send from rpi1, need to activate rpi2
+                    frame2 = msg_dict["content"]["device"]
+                    self.frame_pair[frame2] = frame
+                    self.sendReplyToEdge(frame2, str({"event": "activate", "content": {"msg": "activate"}}))
+                    continue
+
+
+                # else, normal request
                 # Pass the message to the Cloud
                 request = message_edge
                 self.sendRequestToCloud(request)
@@ -72,24 +99,24 @@ class Fog:
                 #  Get the reply from the cloud.
                 message_cloud = self.getReplyFromCloud()
 
+                cloud_dict = eval(message_cloud)
+                if cloud_dict["event"] == "scan":
+                    self.sendReplyToEdge(self.frame_pair[frame], message_cloud)
+                    continue
+
                 self.sendReplyToEdge(frame, message_cloud)
 
-                if request == "Quit":
-                    if message_cloud != "Bye":
-                        print("Fog Server: The Cloud Server might not quit properly.")
+                if message_cloud == "Bye":
+                    print("Fog Server: The Cloud Server might not quit properly. Please restart server.")
+                    self.disconnetAllFrame()
                     break
             except Exception as e:
-                # TODO
-                # for all frame connected, self.sendReplyToEdge(frame, "Quit")
-                # for f in self.frames:
-                #     if self.frames[f]:
-                #         self.sendReplyToEdge(f, "Quit")
+                # for all frame connected, self.sendReplyToEdge(frame, "Bye")
+                self.disconnetAllFrame()
 
                 print("Fog Server: Error occurs when talking to the Cloud Server/Edge Client. Please restart the Fog Server.")
                 print("Fog Server: ", e)
                 break
-                # if request == "Quit":
-                #     break
 
 
 

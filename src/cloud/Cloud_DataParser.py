@@ -37,8 +37,7 @@ def updateAccount(Id: str, name: str, password: str) -> int:
         return 0
 
 
-## TODO: find a better way to read data
-def getUserHistry(userID:str):
+def getUserHistory(userID:str):
     with open(History_file) as f:
         items = []
         for line in f:
@@ -46,3 +45,13 @@ def getUserHistry(userID:str):
             if line[0] == userID:
                 items.append([line[i] for i in range(1,len(line),2)])
         return items
+
+
+def updateUserHistory(History_file: str, hist: []):
+    try:
+        with open(History_file, "a+") as f:
+            f.write('|'.join(hist) + "\n")
+    except:
+        return 1
+    else:
+        return 0

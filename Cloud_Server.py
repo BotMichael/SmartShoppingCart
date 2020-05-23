@@ -23,8 +23,6 @@ class Cloud_Server:
         #####
         # Computation part
         self.computation = Cloud_Computation()
-        # self.CHECKOUT=False
-
 
     
     def getRequestFromFog(self):
@@ -73,13 +71,18 @@ class Cloud_Server:
 
     def run(self):
         while True:
-            #  Wait for next request from client
-            request = self.getRequestFromFog()
-            msg = eval(request)
-            print(msg)
-            reply = self.getReply(msg)
-            print("Cloud Server:", reply)
-            self.sendReplyToFog(reply)
+            try:
+                #  Wait for next request from client
+                request = self.getRequestFromFog()
+                msg = eval(request)
+                reply = self.getReply(msg)
+                self.sendReplyToFog(reply)
+            except Exception as e:
+                self.sendReplyToFog('Bye')
+                print("Edge Client: Error occurs when talking to the Cloud Server. Please restart the Edge Client.")
+                print("Edge Client:", e)
+
+
 
 
     def __del__(self):

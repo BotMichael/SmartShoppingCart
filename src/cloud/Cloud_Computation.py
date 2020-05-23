@@ -12,6 +12,7 @@ class Cloud_Computation:
         temp = Cloud_DataParser.getDataDict()
         self.pos_dict = temp[0]
         self.price_dict = temp[1]
+        print(self.price_dict)
         self.account_dict = temp[2]
         self.MarketMap = MarketMap(self.pos_dict)
 
@@ -49,30 +50,34 @@ class Cloud_Computation:
         self._store_shopping(items)
         return SUC_000, {"msg": ERR_MSG[SUC_000]}
 
-
-
-    # TODO
+    ## TODO: security
     def _log_in(self, userID, password):
-        return userID in self.account_dict and password == self.account_dict[userID][1]
+        return userID.lower() in self.account_dict and password == self.account_dict[userID][1]
 
     # TODO: estimate the items instead of taking the most recent one
     def _get_hist(self, userID):
-        items = Cloud_DataParser.getUserHistry(userID)
+        items = Cloud_DataParser.getUserHistory(userID)
         return items[-1] if items != [] else []
 
-    # TODO: if item not in price dict...
     def _calculate_price(self, items):
         price = 0
         detail = {}
         for i, n in items.items():
+            i = i.lower()
             if i in self.price_dict:
-                price += self.price_dict[i]*n
+                price += eval(self.price_dict[i])*int(n)
                 detail[i] = {"num": n, "price": self.price_dict[i]}
         return price, detail
+
 
     def _check_out(self):
         return 0
 
-    def _store_shopping(self, items):
-        pass
+
+    def _store_shopping(self, userID, items):
+        hist = [userID]
+        for item in items:
+            hist.append(item)
+            hist.append(items[item]["num"])
+        Cloud_DataParser.updateUserHistory(hist)
 
