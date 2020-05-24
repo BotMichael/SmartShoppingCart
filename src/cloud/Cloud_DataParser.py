@@ -8,29 +8,26 @@ History_file = "Data/Shopping_History.txt"
 
 
 
-def _parser(filename: str, parse_account = False) -> dict:
+def _parser(filename: str) -> dict:
     result = dict()
     f = open(filename, "r")
     for line in f:
         l = line.strip().split("|")
-        if parse_account:
-            result[l[0].strip().lower()] = (l[1].strip(), l[2].strip())
-        else:
-            result[l[0].strip().lower()] = l[1].strip()
+        result[l[0].strip().lower()] = l[1].strip()
     return result
 
 
 def getDataDict() -> ("position_dict", "price_dict", "id_dict"):
     pos_dict = _parser(Position_file)
     price_dict = _parser(Price_file)
-    id_dict = _parser(Account_file, True)
+    id_dict = _parser(Account_file)
     return (pos_dict, price_dict, id_dict)
 
 
-def updateAccount(Id: str, name: str, password: str) -> int:
+def updateAccount(name: str, password: str) -> int:
     try:
         with open(Account_file, "a+") as f:
-            f.write(Id + "|" + name + "|" + password + "\n")
+            f.write(name + "|" + password + "\n")
     except:
         return 1
     else:

@@ -12,9 +12,22 @@ class Cloud_Computation:
         temp = Cloud_DataParser.getDataDict()
         self.pos_dict = temp[0]
         self.price_dict = temp[1]
-        print(self.price_dict)
         self.account_dict = temp[2]
         self.MarketMap = MarketMap(self.pos_dict)
+        print(self.pos_dict)
+        print(self.price_dict)
+        print(self.account_dict)
+        print(self.MarketMap)
+
+
+    def register(self, userID, password):
+        i = Cloud_DataParser.updateAccount(userID, password)
+        if i == 0:
+            # update the account dict
+            self.account_dict = Cloud_DataParser.getDataDict()[2]
+            return SUC_000, {"msg": ERR_MSG[SUC_000]}
+        else:
+            return ERR_001, {"msg": ERR_MSG[ERR_003]}
 
 
     def getRecommandPath(self, userID, password):
@@ -47,12 +60,13 @@ class Cloud_Computation:
         if not self._check_out(userID, price):
             return ERR_002, {"msg": ERR_MSG[ERR_002]}
 
-        self._store_shopping(items)
+        self._store_shopping(userID, items)
         return SUC_000, {"msg": ERR_MSG[SUC_000]}
 
     ## TODO: security
     def _log_in(self, userID, password):
-        return userID.lower() in self.account_dict and password == self.account_dict[userID][1]
+        print("log in:", self.account_dict)
+        return userID.lower() in self.account_dict and password == self.account_dict[userID]
 
     # TODO: estimate the items instead of taking the most recent one
     def _get_hist(self, userID):
@@ -70,7 +84,7 @@ class Cloud_Computation:
         return price, detail
 
 
-    def _check_out(self):
+    def _check_out(self, userID: str, price: str):
         return 0
 
 

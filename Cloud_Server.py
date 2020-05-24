@@ -45,6 +45,13 @@ class Cloud_Server:
             status, content = self.computation.getRecommandPath(userID, password)
             return template.format("login", status, content)
 
+        
+        if msg["event"] == "register":
+            userID = msg["content"]["userID"]
+            password = msg["content"]["password"]
+            status, content = self.computation.register(userID, password)
+            return template.format("register", status, content)
+
 
         if msg["event"] == "path":
             current_position = msg["content"]["current_position"]
@@ -80,7 +87,8 @@ class Cloud_Server:
             except Exception as e:
                 self.sendReplyToFog('Bye')
                 print("Edge Client: Error occurs when talking to the Cloud Server. Please restart the Edge Client.")
-                print("Edge Client:", e)
+                print("Edge Client:", str(e))
+                break
 
 
 
