@@ -44,7 +44,7 @@ def getUserHistory(userID:str):
         return items
 
 
-def updateUserHistory(History_file: str, hist: []):
+def updateUserHistory(hist: []):
     try:
         with open(History_file, "a+") as f:
             f.write('|'.join(hist) + "\n")

@@ -8,6 +8,7 @@ from src.edge.TFLite_detection_face import face_activate
 from src.edge.Edge_Client_Interface import Edge_Client_Interface
 
 template = '{{ "device": "{}", "event": "{}", "content" : {} }}'
+valid_request = {"find path", "checkout", "quit", "price"}
 
 class Edge_Client_RP1(Edge_Client_Interface):
     def __init__(self):
@@ -102,62 +103,77 @@ class Edge_Client_RP1(Edge_Client_Interface):
 
 
 
+    def _scan(self) -> "message_dict":
+        self.sendRequestToFog(template.format(self.id, "activate", {"device": "rpi2_000"}))
+        #  Get the reply.
+        message = self.getReplyFromFog()
+        message_dict = eval(message)
+        if message_dict["status"] == 0:
+            print("Success.")
+            self.cart = message_dict["content"]["item"]
+            self.total_price = message_dict["content"]["price"]
+        else:
+            print("Error:", message_dict["content"]["msg"])
+        return message_dict
+
+
+    def _checkout(self):
+        scan_dict = self._scan()
+        if(scan_dict["status"] == 0):
+            username = self._getUserInput("username")
+            userpw = self._getUserInput("password")
+            self.sendRequestToFog(
+                template.format(self.id, "checkout", {"userID": username, "password": userpw, 
+                                "price": self.total_price, "item": self.cart})
+                )
+            message = self.getReplyFromFog()
+            message_dict = eval(message)
+            if message_dict["status"] == 0:
+                print("Success:", message_dict["content"]["msg"])
+            else:
+                print("Error:", message_dict["content"]["msg"])
+
+
+    def _find_path(self):
+        item = self._getUserInput("item")
+        current_position = self._getUserInput("current position")
+        self.sendRequestToFog(
+            template.format(self.id, "path", {"item": item, "current_position": current_position}))
+        message = self.getReplyFromFog()
+        message_dict = eval(message)
+        if message_dict["status"] == 0:
+            print("The path is:", message_dict["content"]["path"])
+        else:
+            print("Error:", message_dict["content"]["msg"])
+
 
     def run(self):
-        while True:
-            try:
-                activation_status = self._activation()
-                if(activation_status == 2):
-                    self.sendRequestToFog("Quit")
-                    message = self.getReplyFromFog()
-                    break
-                
-                request = str(input('request: '))
-                if request == "scan":
-                    self.sendRequestToFog(template.format(self.id, "activate", {"device": "rpi2_000"}))
-                    #  Get the reply.
-                    message = self.getReplyFromFog()
-                    message_dict = eval(message)
-                    if message_dict["status"] == 0:
-                        print("Success.")
-                        self.cart = message_dict["content"]["item"]
-                        self.total_price = message_dict["content"]["price"]
-                    else:
-                        print("Error:", message_dict["content"]["msg"])
-                    continue
+        activation_status = self._activation()
+        if(activation_status == 2):
+            self.sendRequestToFog("Quit")
+            message = self.getReplyFromFog()
+            return
 
-                elif request == "Quit":
+        request = self._getUserInput("request", "(find path / price / checkout / quit)").lower()
+        while (request in valid_request):
+            try:
+                if request == "quit":
                     self.sendRequestToFog(request)
                     message = self.getReplyFromFog()
                     break
 
-                elif request == "check_out":
-                    username = self._getUserInput("username")
-                    userpw = self._getUserInput("password")
-                    self.sendRequestToFog(
-                        template.format(self.id, "checkout", {"userID": username, "password": userpw, 
-                                        "price": self.total_price, "item": self.cart})
-                        )
-                    message = self.getReplyFromFog()
-                    message_dict = eval(message)
-                    if message_dict["status"] == 0:
-                        print("Success:", message_dict["content"]["msg"])
-                    else:
-                        print("Error:", message_dict["content"]["msg"])
-                    continue
+                elif request == "price":
+                    self._scan()
+                    print("Current total price of your cart: " + self.total_price)
 
-                elif request == "find_path":
-                    item = self._getUserInput("item")
-                    current_position = self._getUserInput("current position")
-                    self.sendRequestToFog(
-                        template.format(self.id, "path", {"item": item, "current_position": current_position}))
-                    message = self.getReplyFromFog()
-                    message_dict = eval(message)
-                    if message_dict["status"] == 0:
-                        print("The path is:", message_dict["content"]["path"])
-                    else:
-                        print("Error:", message_dict["content"]["msg"])
+                elif request == "checkout":
+                    self._checkout()
 
+                elif request == "find path":
+                    self._find_path()
+
+                else:
+                    print("Invalid request. Please retype your request.")
 
             except Exception as e:
                 print("Edge Client: An error occurs when talking to the Fog Server. Please restart the Edge Client.")

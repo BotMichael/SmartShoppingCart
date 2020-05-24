@@ -4,7 +4,9 @@ import zmq
 import sys
 import time
 import os
+import rsa
 sys.path.append(os.getcwd())
+print(os.getcwd())
 import Global_Var
 
 
@@ -12,6 +14,7 @@ class Edge_Client_Interface:
     def __init__(self, device_ID: str):
         print("Edge client starts. ")
         self.id = device_ID
+        self.pubkey = Global_Var.pubkey
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.DEALER)
         self.socket.setsockopt(zmq.IDENTITY, device_ID.encode())
@@ -29,6 +32,13 @@ class Edge_Client_Interface:
         message = self.socket.recv().decode("utf-8")
         print ("Edge Client", self.id, ": Received reply from the Fog:", message)
         return message
+
+
+            
+    def rsa_encrypt(self, d_str):
+        content = d_str.encode('utf-8')
+        crypto = rsa.encrypt(content, self.pubkey)
+        return crypto
 
 
 

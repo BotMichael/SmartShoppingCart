@@ -1,9 +1,18 @@
 # Cloud_Computation.py
 
-from . import Cloud_DataParser
-from .get_path import MarketMap
-from .Error_code import *
 
+import os
+import sys
+import rsa
+sys.path.append(os.getcwd())
+# print(os.getcwd())
+sys.path.append(os.getcwd() + "\\src\\cloud")
+# print(os.getcwd() + "\\src\\cloud")
+
+import Cloud_DataParser
+from get_path import MarketMap
+from Error_code import *
+import Global_Var
 
 
 
@@ -14,10 +23,17 @@ class Cloud_Computation:
         self.price_dict = temp[1]
         self.account_dict = temp[2]
         self.MarketMap = MarketMap(self.pos_dict)
+        self.privkey = Global_Var.privkey
         print(self.pos_dict)
         print(self.price_dict)
         print(self.account_dict)
         print(self.MarketMap)
+
+
+    def _rsa_decrypt(self, crypto):
+        content = rsa.decrypt(crypto, self.privkey)
+        content = content.decode('utf-8')
+        return content
 
 
     def register(self, userID, password):
@@ -57,7 +73,7 @@ class Cloud_Computation:
         if not self._log_in(userID, password):
             return ERR_001, {"msg": ERR_MSG[ERR_001]}
 
-        if not self._check_out(userID, price):
+        if self._check_out(userID, price):
             return ERR_002, {"msg": ERR_MSG[ERR_002]}
 
         self._store_shopping(userID, items)
