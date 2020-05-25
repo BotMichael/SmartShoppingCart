@@ -73,7 +73,7 @@ def get_item_dictionary():
             camera.capture("/home/pi/Desktop/tflite1/test_picam.jpg")
 #         print("taken photo")
 
-        IM_NAME = 'test_picam.jpg'
+        IM_NAME = '/home/pi/Desktop/tflite1/CS190_P2/test_image.jpg'
 
     # Import TensorFlow libraries
     # If tflite_runtime is installed, import interpreter from tflite_runtime, else import from regular tensorflow
@@ -108,10 +108,10 @@ def get_item_dictionary():
         images = glob.glob(PATH_TO_IMAGES)
 
     # Path to .tflite file, which contains the model that is used for object detection
-    PATH_TO_CKPT = os.path.join(CWD_PATH,MODEL_NAME,GRAPH_NAME)
+    PATH_TO_CKPT = '/home/pi/Desktop/tflite1/CS190_P2/src/edge/Sample_TFLite_model/detect.tflite'
 
     # Path to label map file
-    PATH_TO_LABELS = os.path.join(CWD_PATH,MODEL_NAME,LABELMAP_NAME)
+    PATH_TO_LABELS = '/home/pi/Desktop/tflite1/CS190_P2/src/edge/Sample_TFLite_model/labelmap.txt'
 
     # Load the label map
     with open(PATH_TO_LABELS, 'r') as f:
