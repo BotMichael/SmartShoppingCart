@@ -46,27 +46,27 @@ class Cloud_Server:
             return template.format("login", status, content)
 
         
-        if msg["event"] == "register":
+        elif msg["event"] == "register":
             userID = msg["content"]["userID"]
             password = msg["content"]["password"]
             status, content = self.computation.register(userID, password)
             return template.format("register", status, content)
 
 
-        if msg["event"] == "path":
+        elif msg["event"] == "path":
             current_position = msg["content"]["current_position"]
             item = msg["content"]["item"]
             status, content = self.computation.getPath(current_position, item)
             return template.format("path", status, content)
 
 
-        if msg["event"] == "scan":
+        elif msg["event"] == "scan":
             items = msg["content"]["item"]
             status, content = self.computation.getPrice(items)
             return template.format("scan", status, content)
 
 
-        if msg["event"] == "checkout":
+        elif msg["event"] == "checkout":
             userID = msg["content"]["userID"]
             password = msg["content"]["password"]
             price = msg["content"]["price"]

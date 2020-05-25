@@ -1,10 +1,15 @@
 # Cloud_ComputeData.py
 
+import rsa
+import sys
+import os
+sys.path.append(os.getcwd())
+import Global_Var
+
 Position_file = "Data/Item_Region.txt"
 Price_file = "Data/Price.txt"
 Account_file = "Data/Account.txt"
 History_file = "Data/Shopping_History.txt"
-
 
 
 
@@ -15,6 +20,13 @@ def _parser(filename: str) -> dict:
         l = line.strip().split("|")
         result[l[0].strip().lower()] = l[1].strip()
     return result
+
+
+def get_private_key():
+    with open(Global_Var.privkey_file) as privatefile:
+        p = privatefile.read()
+        privkey = rsa.PrivateKey.load_pkcs1(p)
+    return privkey
 
 
 def getDataDict() -> ("position_dict", "price_dict", "id_dict"):

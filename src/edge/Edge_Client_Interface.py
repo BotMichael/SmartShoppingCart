@@ -14,13 +14,20 @@ class Edge_Client_Interface:
     def __init__(self, device_ID: str):
         print("Edge client starts. ")
         self.id = device_ID
-        self.pubkey = Global_Var.pubkey
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.DEALER)
         self.socket.setsockopt(zmq.IDENTITY, device_ID.encode())
         self.socket.connect("tcp://" + Global_Var.FOG_IP + ":%s" % Global_Var.FOG_PORT)
         print("Edge Client", device_ID, ": connect to port: tcp://" + Global_Var.FOG_IP + ":%s" % Global_Var.FOG_PORT)
+        
+        self.pubkey = self._get_public_key()
 
+
+    def _get_public_key(self):
+        with open(Global_Var.pubkey_file) as publickfile:
+            p = publickfile.read()
+            pubkey = rsa.PublicKey.load_pkcs1(p)
+        return pubkey
 
 
     def sendRequestToFog(self, request: str):

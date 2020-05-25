@@ -4,7 +4,7 @@
     Send:
 
 '''
-from src.edge.TFLite_detection_face import face_activate
+# from src.edge.TFLite_detection_face import face_activate
 from src.edge.Edge_Client_Interface import Edge_Client_Interface
 
 template = '{{ "device": "{}", "event": "{}", "content" : {} }}'
@@ -21,7 +21,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
 
 
     def _getUserInput(self, subject: str, extra = "") -> str:
-        result = str(input("Please type your " + subject + ": " + extra))
+        result = str(input("Please type your " + subject + ": " + extra + " "))
         while(result == ""):
             result = str(input(subject + " can't be empty. Please retype your " + subject + ": "))
         return result
@@ -51,7 +51,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
             # Register
             request_name = self._getUserInput("username")
             request_pw = self._getUserInput("password")
-            info = {"userID": request_name, "password": request_pw}
+            info = {"userID": request_name, "password": str(self.rsa_encrypt(request_pw))}
             self.sendRequestToFog(template.format(self.id, "register", info))
             message = self.getReplyFromFog()
             message_dict = eval(message)
@@ -73,9 +73,11 @@ class Edge_Client_RP1(Edge_Client_Interface):
                      2 - quit
         '''
         while not self.LOGIN:
-            request_name = self._getUserInput("username", "(If you don't have an account you can press enter)")
+            request_name = self._getUserInput("username", "(If you don't have an account you can press enter) ")
             request_pw = self._getUserInput("password")
-            info = {"userID": request_name, "password": request_pw}
+            encrypt = self.rsa_encrypt(request_pw)
+            print(encrypt)
+            info = {"userID": request_name, "password": str(encrypt)}
             self.sendRequestToFog(template.format(self.id, "login", info))
             self.LOGIN = True
             message = self.getReplyFromFog()
@@ -95,7 +97,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
 
     def _activation(self)-> "status: int":
         while not self.ACTIVATE:
-            request = str(face_activate())
+            # request = str(face_activate())
             request = "activate_system"
             if request == "activate_system":
                 self.ACTIVATE = True
@@ -123,7 +125,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
             username = self._getUserInput("username")
             userpw = self._getUserInput("password")
             self.sendRequestToFog(
-                template.format(self.id, "checkout", {"userID": username, "password": userpw, 
+                template.format(self.id, "checkout", {"userID": username, "password": str(self.rsa_encrypt(userpw)), 
                                 "price": self.total_price, "item": self.cart})
                 )
             message = self.getReplyFromFog()

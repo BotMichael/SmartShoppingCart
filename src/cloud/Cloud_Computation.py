@@ -23,7 +23,7 @@ class Cloud_Computation:
         self.price_dict = temp[1]
         self.account_dict = temp[2]
         self.MarketMap = MarketMap(self.pos_dict)
-        self.privkey = Global_Var.privkey
+        self.privkey = Cloud_DataParser.get_private_key()
         print(self.pos_dict)
         print(self.price_dict)
         print(self.account_dict)
@@ -81,6 +81,7 @@ class Cloud_Computation:
 
     ## TODO: security
     def _log_in(self, userID, password):
+        password = self._rsa_decrypt(eval(password))
         print("log in:", self.account_dict)
         return userID.lower() in self.account_dict and password == self.account_dict[userID]
 
@@ -110,4 +111,5 @@ class Cloud_Computation:
             hist.append(item)
             hist.append(items[item]["num"])
         Cloud_DataParser.updateUserHistory(hist)
+
 

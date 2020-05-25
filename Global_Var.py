@@ -7,4 +7,5 @@ CLOUD_IP = "localhost"
 FOG_PORT = 5556
 FOG_IP = "localhost"
 
-pubkey, privkey = rsa.newkeys(1024)
+pubkey_file = "Data/public.pem"
+privkey_file = "Data/private.pem"
