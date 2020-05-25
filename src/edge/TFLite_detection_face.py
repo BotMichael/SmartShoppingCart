@@ -64,16 +64,16 @@ def face_activate():
         sys.exit()
 
     # If neither an image or a folder are specified, default to using 'test1.jpg' for image name
-    if (not IM_NAME and not IM_DIR):
+    if 1:
         import picamera
 
 #         print("about to take a photo")
         with picamera.PiCamera() as camera:
             camera.resolution = (1280,720)
-            camera.capture("/home/pi/Desktop/tflite1/test_picam.jpg")
+            camera.capture("/home/pi/Desktop/test.jpg")
 #         print("taken photo")
 
-        IM_NAME = 'test_picam.jpg'
+        IM_NAME = '/home/pi/Desktop/test.jpg'
 
     # Import TensorFlow libraries
     # If tflite_runtime is installed, import interpreter from tflite_runtime, else import from regular tensorflow
@@ -107,11 +107,12 @@ def face_activate():
         PATH_TO_IMAGES = os.path.join(CWD_PATH,IM_NAME)
         images = glob.glob(PATH_TO_IMAGES)
 
+    _path = "/home/pi/tflite1/CS190_P2/src/edge/Sample_TFLite_model"
     # Path to .tflite file, which contains the model that is used for object detection
-    PATH_TO_CKPT = os.path.join(CWD_PATH,MODEL_NAME,GRAPH_NAME)
+    PATH_TO_CKPT = f"{_path}/detect.tflite"#os.path.join(CWD_PATH,MODEL_NAME,GRAPH_NAME)
 
     # Path to label map file
-    PATH_TO_LABELS = os.path.join(CWD_PATH,MODEL_NAME,LABELMAP_NAME)
+    PATH_TO_LABELS = f"{_path}/labelmap.txt"#os.path.join(CWD_PATH,MODEL_NAME,LABELMAP_NAME)
 
     # Load the label map
     with open(PATH_TO_LABELS, 'r') as f:
