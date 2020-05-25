@@ -29,8 +29,7 @@ class Edge_Client_RP2(Edge_Client_Interface):
             except Exception as e:
                 print("Edge Client: Error occurs when talking to the Fog Server. Please restart the Edge Client.")
                 print("Edge Client:", e)
-                if request == "Quit":
-                    break
+                break
 
 
 if __name__ == "__main__":

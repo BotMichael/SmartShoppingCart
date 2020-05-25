@@ -21,7 +21,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
 
 
     def _getUserInput(self, subject: str, extra = "") -> str:
-        result = str(input("Please type your " + subject + ": " + extra + " "))
+        result = str(input("Please type your " + subject + " " + extra + ": "))
         while(result == ""):
             result = str(input(subject + " can't be empty. Please retype your " + subject + ": "))
         return result
@@ -157,8 +157,9 @@ class Edge_Client_RP1(Edge_Client_Interface):
             return
 
         request = self._getUserInput("request", "(find path / price / checkout / quit)").lower()
-        while (request in valid_request):
-            try:
+        try:
+            while (request in valid_request):
+            
                 if request == "quit":
                     self.sendRequestToFog(request)
                     message = self.getReplyFromFog()
@@ -166,7 +167,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
 
                 elif request == "price":
                     self._scan()
-                    print("Current total price of your cart: " + self.total_price)
+                    print("Current total price of your cart: " + str(self.total_price))
 
                 elif request == "checkout":
                     self._checkout()
@@ -179,11 +180,9 @@ class Edge_Client_RP1(Edge_Client_Interface):
 
                 request = self._getUserInput("request", "(find path / price / checkout / quit)").lower()
 
-            except Exception as e:
-                print("Edge Client: An error occurs when talking to the Fog Server. Please restart the Edge Client.")
-                print("Edge Client:", e)
-                if request == "Quit":
-                    break
+        except Exception as e:
+            print("Edge Client: An error occurs when talking to the Fog Server. Please restart the Edge Client.")
+            print("Edge Client:", e)
 
 
 if __name__ == "__main__":
