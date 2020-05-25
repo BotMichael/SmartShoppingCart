@@ -76,7 +76,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
             request_name = self._getUserInput("username", "(If you don't have an account you can press enter) ")
             request_pw = self._getUserInput("password")
             encrypt = self.rsa_encrypt(request_pw)
-            print(encrypt)
+            # print(encrypt)
             info = {"userID": request_name, "password": str(encrypt)}
             self.sendRequestToFog(template.format(self.id, "login", info))
             self.LOGIN = True
@@ -176,6 +176,8 @@ class Edge_Client_RP1(Edge_Client_Interface):
 
                 else:
                     print("Invalid request. Please retype your request.")
+
+                request = self._getUserInput("request", "(find path / price / checkout / quit)").lower()
 
             except Exception as e:
                 print("Edge Client: An error occurs when talking to the Fog Server. Please restart the Edge Client.")
