@@ -4,7 +4,7 @@
     Send:
 
 '''
-# from src.edge.TFLite_detection_face import face_activate
+from src.edge.TFLite_detection_face import face_activate
 from src.edge.Edge_Client_Interface import Edge_Client_Interface
 
 template = '{{ "device": "{}", "event": "{}", "content" : {} }}'
@@ -97,8 +97,8 @@ class Edge_Client_RP1(Edge_Client_Interface):
 
     def _activation(self)-> "status: int":
         while not self.ACTIVATE:
-            # request = str(face_activate())
-            request = "activate_system"
+            request = str(face_activate())
+            # request = "activate_system"
             if request == "activate_system":
                 self.ACTIVATE = True
                 return self._login()
