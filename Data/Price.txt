@@ -3,3 +3,6 @@ Icecream|4.9
 Apple|1.0
 Orange|4.99
 Milk Tea|6.75
+Bottle|2.3
+Banana|1.47
+Potted Plant|3.99

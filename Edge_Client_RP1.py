@@ -134,6 +134,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
                 print("Success:", message_dict["content"]["msg"])
             else:
                 print("Error:", message_dict["content"]["msg"])
+        return message_dict
 
 
     def _find_path(self):
@@ -152,17 +153,14 @@ class Edge_Client_RP1(Edge_Client_Interface):
     def run(self):
         activation_status = self._activation()
         if(activation_status == 2):
-            self.sendRequestToFog("Quit")
+            self.sendRequestToFog("quit")
             message = self.getReplyFromFog()
             return
 
         request = self._getUserInput("request", "(find path / price / checkout / quit)").lower()
         try:
             while (request in valid_request):
-            
                 if request == "quit":
-                    self.sendRequestToFog(request)
-                    message = self.getReplyFromFog()
                     break
 
                 elif request == "price":
@@ -170,7 +168,9 @@ class Edge_Client_RP1(Edge_Client_Interface):
                     print("Current total price of your cart: " + str(self.total_price))
 
                 elif request == "checkout":
-                    self._checkout()
+                    msg_dict = self._checkout()
+                    if msg_dict["status"] == 0:
+                        break
 
                 elif request == "find path":
                     self._find_path()
@@ -183,6 +183,9 @@ class Edge_Client_RP1(Edge_Client_Interface):
         except Exception as e:
             print("Edge Client: An error occurs when talking to the Fog Server. Please restart the Edge Client.")
             print("Edge Client:", e)
+        
+        self.sendRequestToFog("quit")
+        message = self.getReplyFromFog()
 
 
 if __name__ == "__main__":

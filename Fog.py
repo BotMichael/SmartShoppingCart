@@ -73,7 +73,7 @@ class Fog:
                 # Receive message from the Edge first
                 frame, message_edge = self.getRequestFromEdge()
 
-                if message_edge == "Quit":
+                if message_edge.lower() == "quit":
                     message_to_edge = "Bye"
                     self.sendReplyToEdge(frame, message_to_edge)
                     del self.frames[frame]
