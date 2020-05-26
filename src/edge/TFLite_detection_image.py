@@ -185,8 +185,9 @@ def get_item_dictionary():
 
                 # Draw label
                 object_name = labels[int(classes[i])] # Look up object name from "labels" array using class index
+                if object_name == 'potted plant':
+                    object_name = 'pineapple'
                 label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
-                
                 result_label.append(object_name)
                 
                 labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size

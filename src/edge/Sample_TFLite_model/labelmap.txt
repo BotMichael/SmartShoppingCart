@@ -62,7 +62,7 @@ donut
 cake
 chair
 couch
-potted plant
+pineapple
 bed
 ???
 dining table
