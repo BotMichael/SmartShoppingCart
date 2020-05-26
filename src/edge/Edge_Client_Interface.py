@@ -18,7 +18,7 @@ class Edge_Client_Interface:
         self.socket = self.context.socket(zmq.DEALER)
         self.socket.setsockopt(zmq.IDENTITY, device_ID.encode())
         self.socket.connect("tcp://" + Global_Var.FOG_IP + ":%s" % Global_Var.FOG_PORT)
-        print("Edge Client", device_ID, ": connect to port: tcp://" + Global_Var.FOG_IP + ":%s" % Global_Var.FOG_PORT)
+        #print("Edge Client", device_ID, ": connect to port: tcp://" + Global_Var.FOG_IP + ":%s" % Global_Var.FOG_PORT)
         
         self.pubkey = self._get_public_key()
 
@@ -32,12 +32,27 @@ class Edge_Client_Interface:
 
     def sendRequestToFog(self, request: str):
         self.socket.send_string(request)
-        print("Edge Client", self.id, ": Sending request to the Fog:", request)
+        #print("Edge Client", self.id, ": Sending request to the Fog:", request)
 
 
     def getReplyFromFog(self):
         message = self.socket.recv().decode("utf-8")
-        print ("Edge Client", self.id, ": Received reply from the Fog:", message)
+        if message!="Bye":
+            m = eval(message)
+        else:
+            m={"event":"Bye"}
+        
+        if m["event"]=="scan":
+            for each in m["content"]["item"].keys():
+                if each!="price":
+                    _num   = m["content"]["item"][each]["num"]
+                    _price = m["content"]["item"][each]["price"]
+                    print(f"{each}: {_num} x ${_price}")
+        elif m["event"]=="Bye":
+            print("BYE~")
+        else:
+            pass
+            #print ("Edge Client", self.id, ": Received reply from the Fog:", message)
         return message
 
 
