@@ -61,7 +61,7 @@ def updateUserHistory(hist: []):
     try:
         with open(History_file, "a+") as f:
             f.write('|'.join(hist) + "\n")
-    except:
-        return 1
+    except Exception as e:
+        return (1, str(e))
     else:
-        return 0
+        return (0, "")

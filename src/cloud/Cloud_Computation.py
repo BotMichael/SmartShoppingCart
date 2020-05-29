@@ -71,14 +71,16 @@ class Cloud_Computation:
         return SUC_000, {"price": price, "item": item}
 
 
-    def getCheckOut(self, userID, password, price, items):
+    def getCheckOut(self, userID, password, store, price, items):
         if not self._log_in(userID, password):
             return ERR_001, {"msg": ERR_MSG[ERR_001]}
 
         if self._check_out(userID, price):
             return ERR_002, {"msg": ERR_MSG[ERR_002]}
 
-        self._store_shopping(userID, items)
+        self._log.logger.info("store: " + store)
+        if store == "Y":
+            self._store_shopping(userID, items)
         return SUC_000, {"msg": ERR_MSG[SUC_000]}
 
     ## TODO: security
@@ -111,7 +113,10 @@ class Cloud_Computation:
         hist = [userID]
         for item in items:
             hist.append(item)
-            hist.append(items[item]["num"])
-        Cloud_DataParser.updateUserHistory(hist)
+            hist.append(str(items[item]["num"]))
+        self._log.logger.info("hist: " + str(hist))
+        reply, err_msg = Cloud_DataParser.updateUserHistory(hist)
+        if(reply == 1):
+            self._error_log.logger.error("Fail to update shopping history: " + err_msg)
 
 

@@ -74,10 +74,11 @@ class Cloud_Server:
         elif msg["event"] == "checkout":
             userID = msg["content"]["userID"]
             password = msg["content"]["password"]
+            store = msg["content"]["store"]
             price = msg["content"]["price"]
             items = msg["content"]["item"]
 
-            status, content = self.computation.getCheckOut(userID, password, price, items)
+            status, content = self.computation.getCheckOut(userID, password, store, price, items)
             return template.format("checkout", status, content)
 
 

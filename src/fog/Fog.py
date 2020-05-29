@@ -76,6 +76,7 @@ class Fog:
         else:
             return msg_dict
 
+
     ## TODO: make it security & reliable
     def run(self):
         while True:
@@ -84,7 +85,7 @@ class Fog:
                 frame, message_edge = self.getRequestFromEdge()
 
                 if message_edge.lower() == "quit":
-                    message_to_edge = "Bye"
+                    message_to_edge = "Bye " + frame
                     self.sendReplyToEdge(frame, message_to_edge)
                     del self.frames[frame]
                     continue

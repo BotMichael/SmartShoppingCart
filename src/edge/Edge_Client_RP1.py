@@ -16,6 +16,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
         self.ACTIVATE = False
         self.LOGIN = False
         self.REGISTER = False
+        self.user = ""
         self.cart = {}
         self.total_price = 0
 
@@ -73,7 +74,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
                      2 - quit
         '''
         while not self.LOGIN:
-            request_name = self._getUserInput("username", "(If you don't have an account you can press enter) ")
+            request_name = self._getUserInput("username", "(If you don't have an account you can press whatever you like) ")
             request_pw = self._getUserInput("password")
             encrypt = self.rsa_encrypt(request_pw)
             info = {"userID": request_name, "password": str(encrypt)}
@@ -91,6 +92,8 @@ class Edge_Client_RP1(Edge_Client_Interface):
                 elif(status == 3):
                     print("Please relogin.")
                     break
+        if(self.LOGIN):
+            self.user = request_name
 
 
     def _activation(self)-> "status: int":
@@ -111,6 +114,11 @@ class Edge_Client_RP1(Edge_Client_Interface):
             print("Success.")
             self.cart = message_dict["content"]["item"]
             self.total_price = message_dict["content"]["price"]
+            for key in self.cart:
+                if key != "price":
+                    num   = self.cart[key]["num"]
+                    price = self.cart[key]["price"]
+                    print(f"{key}: {num} x ${price}")
         else:
             print("Error:", message_dict["content"]["msg"])
         return message_dict
@@ -118,20 +126,28 @@ class Edge_Client_RP1(Edge_Client_Interface):
 
     def _checkout(self):
         scan_dict = self._scan()
-        if(scan_dict["status"] == 0):
-            username = self._getUserInput("username")
-            userpw = self._getUserInput("password")
-            self.sendRequestToFog(
-                template.format(self.id, "checkout", {"userID": username, "password": str(self.rsa_encrypt(userpw)), 
-                                "price": self.total_price, "item": self.cart})
-                )
-            message = self.getReplyFromFog()
-            message_dict = eval(message)
-            if message_dict["status"] == 0:
-                print("Success:", message_dict["content"]["msg"])
-            else:
-                print("Error:", message_dict["content"]["msg"])
-        return message_dict
+        if(self.cart == {}):
+            print("Your cart is empty; fail to checkout.")
+            return {'event': 'checkout', 'status': 1, 'content': {'msg': 'Cart is empty'}}
+        else:
+            if(scan_dict["status"] == 0):
+                username = self._getUserInput("username")
+                userpw = self._getUserInput("password")
+                store_shopping_store = input("Do you want to store your shopping history? (Y/N) ")
+                while(store_shopping_store == ""):
+                    store_shopping_store = input("Do you want to store your shopping history? (Y/N) ")
+
+                self.sendRequestToFog(
+                    template.format(self.id, "checkout", {"userID": username, "store": store_shopping_store, 
+                                    "password": str(self.rsa_encrypt(userpw)), "price": self.total_price, "item": self.cart})
+                    )
+                message = self.getReplyFromFog()
+                message_dict = eval(message)
+                if message_dict["status"] == 0:
+                    print("Success:", message_dict["content"]["msg"])
+                else:
+                    print("Error:", message_dict["content"]["msg"])
+            return message_dict
 
 
     def _find_path(self):
@@ -147,67 +163,56 @@ class Edge_Client_RP1(Edge_Client_Interface):
             print("Error:", message_dict["content"]["msg"])
 
 
-
-    # def getReplyFromFog(self):
-    #     message = self.socket.recv().decode("utf-8")
-    #     if message!="Bye":
-    #         m = eval(message)
-    #     else:
-    #         m={"event":"Bye"}
-        
-    #     if m["event"]=="scan":
-    #         for each in m["content"]["item"].keys():
-    #             if each!="price":
-    #                 _num   = m["content"]["item"][each]["num"]
-    #                 _price = m["content"]["item"][each]["price"]
-    #                 print(f"{each}: {_num} x ${_price}")
-    #     elif m["event"]=="Bye":
-    #         print("BYE~")
-    #     else:
-    #         pass
-    #         #print ("Edge Client", self.id, ": Received reply from the Fog:", message)
-    #     return message
-
-
-
-
     def run(self):
-        activation_status = self._activation()
-        if(activation_status == 2):
-            self.sendRequestToFog("quit")
-            message = self.getReplyFromFog()
-            return
+        while True:
+            activation_status = self._activation()
+            if(activation_status == 2):
+                self.sendRequestToFog("quit")
+                message = self.getReplyFromFog()
+                return
 
-        request = self._getUserInput("request", "(find path / price / checkout / quit)").lower()
-        try:
-            while (request in valid_request):
-                if request == "quit":
-                    break
-
-                elif request == "price":
-                    self._scan()
-                    print("Current total price of your cart: " + str(self.total_price))
-
-                elif request == "checkout":
-                    msg_dict = self._checkout()
-                    if msg_dict["status"] == 0:
+            print("Login successfully. Welcome " + self.user)
+            request = self._getUserInput("request", "(find path / price / checkout / quit)").lower()
+            try:
+                while (request in valid_request):
+                    if request == "quit":
                         break
 
-                elif request == "find path":
-                    self._find_path()
+                    elif request == "price":
+                        self._scan()
+                        print("Current total price of your cart: " + str(self.total_price))
 
-                else:
-                    print("Invalid request. Please retype your request.")
+                    elif request == "checkout":
+                        msg_dict = self._checkout()
+                        if msg_dict["status"] == 0:
+                            break
 
-                request = self._getUserInput("request", "(find path / price / checkout / quit)").lower()
+                    elif request == "find path":
+                        self._find_path()
 
-        except Exception as e:
-            print("Edge Client: An error occurs when talking to the Fog Server. Please restart the Edge Client.")
-            self._log.logger.Error(str(e))
-            self._error_log.logger.Error(str(e))
-        
-        self.sendRequestToFog("quit")
-        message = self.getReplyFromFog()
+                    else:
+                        print("Invalid request. Please retype your request.")
+
+                    request = self._getUserInput("request", "(find path / price / checkout / quit)").lower()
+
+            except Exception as e:
+                print("Edge Client: An error occurs when talking to the Fog Server. Please restart the Edge Client.")
+                self._log.logger.error(str(e))
+                self._error_log.logger.error(str(e))
+            
+            self.sendRequestToFog("quit")
+            message = self.getReplyFromFog()
+            print("Thank you for using the smart shopping cart. Have a nice day!")
+            if message != "Bye " + self.id:
+                print("This device might not quit properly.")
+                self._log.logger.error(self.id + " might not quit properly.")
+                self._error_log.logger.error(self.id + " might not quit properly.")
+
+            self.ACTIVATE = False
+            self.LOGIN = False
+            self.REGISTER = False
+            self.cart = {}
+            self.total_price = 0
 
 
 if __name__ == "__main__":

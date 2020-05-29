@@ -34,29 +34,31 @@ def _get_logger(filename: str):
     th.setFormatter(format_str)
     logger.addHandler(th)
 
-    return logger
+    return (logger, sh, th)
 
 
 class ErrorLogger:
     def __init__(self):
-        self.logger = _get_logger(_log_file_error)
+        self.logger, self.sh, self.th = _get_logger(_log_file_error)
+        self.logger.removeHandler(self.sh)
 
 
 class CloudLogger:
     def __init__(self):
-        self.logger = _get_logger(_log_file_cloud)
+        self.logger, self.sh, self.th = _get_logger(_log_file_cloud)
 
 
 class FogLogger:
     def __init__(self):
-        self.logger = _get_logger(_log_file_fog)
+        self.logger, self.sh, self.th = _get_logger(_log_file_fog)
 
 
 class EdgeLogger:
     def __init__(self, device_id: str):
-        self.logger = _get_logger(_log_file_edge.replace("?", device_id))
+        self.logger, self.sh, self.th = _get_logger(_log_file_edge.replace("?", device_id))
+        self.logger.removeHandler(self.sh)
 
 
 class ModelLogger:
     def __init__(self, model_id: str):
-        self.logger = _get_logger(_log_file_model.replace("?", model_id))
+        self.logger, self.sh, self.th = _get_logger(_log_file_model.replace("?", model_id))
