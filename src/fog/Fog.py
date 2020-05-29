@@ -3,12 +3,21 @@
 import zmq
 import sys
 import time
+
+
+import os
+import sys
+sys.path.append(os.getcwd() + "\\src\\util")
 import Global_Var
+
+from Logger import FogLogger, ErrorLogger
 
 
 class Fog:
     def __init__(self):
-        print("Fog Server starts. Fog Client starts.")
+        self._log = FogLogger()
+        self._error_log = ErrorLogger()
+        self._log.logger.info("Fog Server starts. Fog Client starts.")
         self.context = zmq.Context()
 
         #####
@@ -17,39 +26,40 @@ class Fog:
         # self.frontend.setsockopt(zmq.SNDTIMEO, 2)   # Timeout: 2 sec
         # self.frontend.setsockopt(zmq.LINGER, 2)
         self.frontend.connect("tcp://" + Global_Var.CLOUD_IP + ":%s" % Global_Var.CLOUD_PORT)
-        print("Fog: frontend (cloud) connect to port: tcp://" + Global_Var.CLOUD_IP + ":%s" % Global_Var.CLOUD_PORT)
+        self._log.logger.info("Frontend (cloud) connect to port: tcp://" + Global_Var.CLOUD_IP + ":%s" % Global_Var.CLOUD_PORT)
 
         #####
         # Socket facing edge devices
         self.backend = self.context.socket(zmq.ROUTER)
         self.backend.bind("tcp://*:%s" % Global_Var.FOG_PORT)
-        print("Fog: backend (edge) bind port: tcp://*:%s" % Global_Var.FOG_PORT)
+        self._log.logger.info("Backend (edge) bind port: tcp://*:%s" % Global_Var.FOG_PORT)
 
         self.frames = {}
         self.frame_pair = {}
 
     def sendReplyToEdge(self, frame: str, reply: str):
         self.backend.send_multipart([frame.encode(), reply.encode()])
-        print("Fog Server: Send reply to the Edge", frame, ":", reply)
+        self._log.logger.info("Send reply to the Edge " + frame + ": " + reply)
 
 
     def sendRequestToCloud(self, request: str):
         self.frontend.send_string(request)
-        print("Fog Server: Sending request to the Cloud:", request)
+        self._log.logger.info("Sending request to the Cloud: " + request)
 
 
     def getRequestFromEdge(self) -> ("frame", "reply"):
         message = self.backend.recv_multipart()
         frame, message_edge = (message[0].decode("utf-8"), message[1].decode("utf-8"))
-        print("Fog Server: Received request from Edge", frame, ":", message_edge)
+        self._log.logger.info("Received request from Edge " + frame + ": " + message_edge)
         self.frames[frame] = True
         return frame, message_edge
 
 
     def getReplyFromCloud(self):
         message_cloud = self.frontend.recv().decode("utf-8")
-        print ("Fog Server: Received reply from the Cloud:", message_cloud)
+        self._log.logger.info("Received reply from the Cloud: " + message_cloud)
         return message_cloud
+
 
     ## TODO: not work properly now
     def disconnetAllFrame(self):
@@ -107,21 +117,21 @@ class Fog:
                 self.sendReplyToEdge(frame, message_cloud)
 
                 if message_cloud == "Bye":
-                    print("Fog Server: The Cloud Server might not quit properly. Please restart server.")
+                    self._log.write_log("Fog Server: The Cloud Server might not quit properly. Please restart server.")
                     self.disconnetAllFrame()
                     break
+
             except Exception as e:
                 # for all frame connected, self.sendReplyToEdge(frame, "Bye")
                 self.disconnetAllFrame()
-
-                print("Fog Server: Error occurs when talking to the Cloud Server/Edge Client. Please restart the Fog Server.")
-                print("Fog Server: ", e)
+                self._log.logging.Error(str(e))
+                self._error_log.logging.Error(str(e))
                 break
 
 
 
     def __del__(self):
-        print("Fog Server terminates. Fog Client terminates.")
+        self._log.logger.info("Fog Server terminates. Fog Client terminates.")
         self.frontend.setsockopt(zmq.LINGER, 0)
         self.frontend.close()
         self.backend.setsockopt(zmq.LINGER, 0)

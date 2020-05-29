@@ -1,10 +1,11 @@
 # Cloud_ComputeData.py
 
-import rsa
-import sys
 import os
-sys.path.append(os.getcwd())
+import sys
+sys.path.append(os.getcwd() + "\\src\\util")
 import Global_Var
+
+import rsa
 
 Position_file = "Data/Item_Region.txt"
 Price_file = "Data/Price.txt"

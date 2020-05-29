@@ -2,8 +2,8 @@
 '''
     Checking out.
 '''
-from src.edge.TFLite_detection_image import get_item_dictionary
-from src.edge.Edge_Client_Interface import Edge_Client_Interface
+from TFLite_detection_image import get_item_dictionary
+from Edge_Client_Interface import Edge_Client_Interface
 
 template = '{{ "device": "{}", "event": "{}", "content" : {} }}'
 
@@ -28,7 +28,8 @@ class Edge_Client_RP2(Edge_Client_Interface):
                     break
             except Exception as e:
                 print("Edge Client: Error occurs when talking to the Fog Server. Please restart the Edge Client.")
-                print("Edge Client:", e)
+                self._log.logger.Error(str(e))
+                self._error_log.logger.Error(str(e))
                 break
 
 

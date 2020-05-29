@@ -1,11 +1,11 @@
 # Edge_Client_RP1.py
 '''
     Detect face & user interaction
-    Send:
-
 '''
-from src.edge.TFLite_detection_face import face_activate
-from src.edge.Edge_Client_Interface import Edge_Client_Interface
+
+
+# from src.edge.TFLite_detection_face import face_activate
+from Edge_Client_Interface import Edge_Client_Interface
 
 template = '{{ "device": "{}", "event": "{}", "content" : {} }}'
 valid_request = {"find path", "checkout", "quit", "price"}
@@ -76,7 +76,6 @@ class Edge_Client_RP1(Edge_Client_Interface):
             request_name = self._getUserInput("username", "(If you don't have an account you can press enter) ")
             request_pw = self._getUserInput("password")
             encrypt = self.rsa_encrypt(request_pw)
-            # print(encrypt)
             info = {"userID": request_name, "password": str(encrypt)}
             self.sendRequestToFog(template.format(self.id, "login", info))
             self.LOGIN = True
@@ -94,15 +93,13 @@ class Edge_Client_RP1(Edge_Client_Interface):
                     break
 
 
-
     def _activation(self)-> "status: int":
         while not self.ACTIVATE:
-            request = str(face_activate())
-            # request = "activate_system"
+            # request = str(face_activate())
+            request = "activate_system"
             if request == "activate_system":
                 self.ACTIVATE = True
                 return self._login()
-
 
 
     def _scan(self) -> "message_dict":
@@ -150,6 +147,30 @@ class Edge_Client_RP1(Edge_Client_Interface):
             print("Error:", message_dict["content"]["msg"])
 
 
+
+    # def getReplyFromFog(self):
+    #     message = self.socket.recv().decode("utf-8")
+    #     if message!="Bye":
+    #         m = eval(message)
+    #     else:
+    #         m={"event":"Bye"}
+        
+    #     if m["event"]=="scan":
+    #         for each in m["content"]["item"].keys():
+    #             if each!="price":
+    #                 _num   = m["content"]["item"][each]["num"]
+    #                 _price = m["content"]["item"][each]["price"]
+    #                 print(f"{each}: {_num} x ${_price}")
+    #     elif m["event"]=="Bye":
+    #         print("BYE~")
+    #     else:
+    #         pass
+    #         #print ("Edge Client", self.id, ": Received reply from the Fog:", message)
+    #     return message
+
+
+
+
     def run(self):
         activation_status = self._activation()
         if(activation_status == 2):
@@ -182,7 +203,8 @@ class Edge_Client_RP1(Edge_Client_Interface):
 
         except Exception as e:
             print("Edge Client: An error occurs when talking to the Fog Server. Please restart the Edge Client.")
-            print("Edge Client:", e)
+            self._log.logger.Error(str(e))
+            self._error_log.logger.Error(str(e))
         
         self.sendRequestToFog("quit")
         message = self.getReplyFromFog()

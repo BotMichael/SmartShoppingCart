@@ -1,0 +1,2 @@
+2020-05-28 19:11:00,121 - C:\Users\98552\Desktop\CS190 Project2\CS190_P2\src\edge\Edge_Client_Interface.py[line:20] - INFO: Edge client rpi2_000 starts. 
+2020-05-28 19:11:00,148 - C:\Users\98552\Desktop\CS190 Project2\CS190_P2\src\edge\Edge_Client_Interface.py[line:27] - INFO: rpi2_000: connect to port: tcp://localhost:5556

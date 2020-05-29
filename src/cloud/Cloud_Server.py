@@ -1,16 +1,21 @@
 # Cloud_Server.py
-import zmq
-import sys
-import time
 
+import os
+import sys
+sys.path.append(os.getcwd() + "\\src\\util")
+
+import zmq
 import Global_Var
-from src.cloud.Cloud_Computation import Cloud_Computation
+from Cloud_Computation import Cloud_Computation
+from Logger import CloudLogger, ErrorLogger
 
 template = "{{ 'event':'{}', 'status':{}, 'content':{} }}"
 
 class Cloud_Server:
     def __init__(self):
-        print("Cloud Server starts.")
+        self._log = CloudLogger()
+        self._error_log = ErrorLogger()
+        self._log.logger.info("Cloud Server starts.")
 
         #####
         # Socket part
@@ -18,7 +23,7 @@ class Cloud_Server:
         self.socket = self.context.socket(zmq.REP)
         # self.socket.setsockopt(zmq.LINGER, 3000)      # The message will remain in the socket for 3 seconds if failing to send to the cloud 
         self.socket.bind("tcp://*:%s" % Global_Var.CLOUD_PORT)
-        print("Cloud Server: Bind to port:" + "tcp://*:%s" % Global_Var.CLOUD_PORT)
+        self._log.logger.info("Bind to port:" + "tcp://*:%s" % Global_Var.CLOUD_PORT)
 
         #####
         # Computation part
@@ -27,13 +32,13 @@ class Cloud_Server:
     
     def getRequestFromFog(self):
         message = self.socket.recv().decode("utf-8")
-        print("Cloud Server: Received request:", message)
+        self._log.logger.info("Received request: " + message)
         return message
 
     
     def sendReplyToFog(self, reply: str):
         self.socket.send_string(reply)
-        print("Cloud Server: Send reply to the Fog:", reply)
+        self._log.logger.info("Send reply to the Fog: " + reply)
 
 
     def getReply(self, msg):
@@ -86,15 +91,13 @@ class Cloud_Server:
                 self.sendReplyToFog(reply)
             except Exception as e:
                 self.sendReplyToFog('Bye')
-                print("Edge Client: Error occurs when talking to the Cloud Server. Please restart the Edge Client.")
-                print("Edge Client:", str(e))
+                self._log.logger.Error(str(e))
+                self._error_log.logger.Error(str(e))
                 break
 
 
-
-
     def __del__(self):
-        print("Cloud Server terminates.")
+        self._log.logger.info("Cloud Server terminates.")
         self.socket.setsockopt(zmq.LINGER, 0)
         self.socket.close()
         self.context.term()

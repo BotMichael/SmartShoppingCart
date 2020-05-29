@@ -3,16 +3,15 @@
 
 import os
 import sys
-import rsa
-sys.path.append(os.getcwd())
-# print(os.getcwd())
-sys.path.append(os.getcwd() + "\\src\\cloud")
-# print(os.getcwd() + "\\src\\cloud")
+sys.path.append(os.getcwd() + "\\src\\util")
 
+import rsa
 import Cloud_DataParser
 from get_path import MarketMap
 from Error_code import *
 import Global_Var
+
+from Logger import ErrorLogger, CloudLogger
 
 
 
@@ -24,10 +23,13 @@ class Cloud_Computation:
         self.account_dict = temp[2]
         self.MarketMap = MarketMap(self.pos_dict)
         self.privkey = Cloud_DataParser.get_private_key()
-        print(self.pos_dict)
-        print(self.price_dict)
-        print(self.account_dict)
-        print(self.MarketMap)
+
+        self._log = CloudLogger()
+        self._error_log = ErrorLogger()
+        self._log.logger.info(str(self.pos_dict))
+        self._log.logger.info(str(self.price_dict))
+        self._log.logger.info(str(self.account_dict))
+        self._log.logger.info(str(self.MarketMap))
 
 
     def _rsa_decrypt(self, crypto):
@@ -82,7 +84,7 @@ class Cloud_Computation:
     ## TODO: security
     def _log_in(self, userID, password):
         password = self._rsa_decrypt(eval(password))
-        print("log in:", self.account_dict)
+        self._log.logger.info("log in: " + str(self.account_dict))
         return userID.lower() in self.account_dict and password == self.account_dict[userID]
 
     # TODO: estimate the items instead of taking the most recent one
