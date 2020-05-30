@@ -1,17 +1,11 @@
 # Fog.py
 
 import zmq
-import sys
-import time
 
-
-import os
-import sys
-sys.path.append(os.getcwd() + "\\src\\util")
 import Global_Var
+from log.Logger import FogLogger, ErrorLogger
 
-from Logger import FogLogger, ErrorLogger
-
+template = '{{ "status": {}, "event": "{}", "content" : {} }}'
 
 class Fog:
     def __init__(self):
@@ -38,11 +32,13 @@ class Fog:
         self.frame_pair = {}
 
     def sendReplyToEdge(self, frame: str, reply: str):
+        reply = str(reply)
         self.backend.send_multipart([frame.encode(), reply.encode()])
         self._log.logger.info("Send reply to the Edge " + frame + ": " + reply)
 
 
     def sendRequestToCloud(self, request: str):
+        request = str(request)
         self.frontend.send_string(request)
         self._log.logger.info("Sending request to the Cloud: " + request)
 
@@ -52,12 +48,22 @@ class Fog:
         frame, message_edge = (message[0].decode("utf-8"), message[1].decode("utf-8"))
         self._log.logger.info("Received request from Edge " + frame + ": " + message_edge)
         self.frames[frame] = True
+        try:
+            message_edge = eval(message_edge)
+        except Exception as e:
+            self._log.logger.error(" Error when eval(message_edge)" + str(e))
+            self._error_log.logger.error(" Error when eval(message_edge)" + str(e))
         return frame, message_edge
 
 
     def getReplyFromCloud(self):
         message_cloud = self.frontend.recv().decode("utf-8")
         self._log.logger.info("Received reply from the Cloud: " + message_cloud)
+        try:
+            message_cloud = eval(message_cloud)
+        except Exception as e:
+            self._log.logger.error(" Error when eval(message_cloud)" + str(e))
+            self._error_log.logger.error(" Error when eval(message_cloud)" + str(e))
         return message_cloud
 
 
@@ -65,16 +71,8 @@ class Fog:
     def disconnetAllFrame(self):
         for f in self.frames:
             if self.frames[f]:
-                self.sendReplyToEdge(f, "Bye")
+                self.sendReplyToEdge(f, template.format(-1, "quit", {"msg": "Bye "+f} ))
 
-
-    def filter(self, frame, message_edge):
-        try:  # tcl dbq # want to do filter here
-            msg_dict = eval(message_edge)
-        except Exception as e:
-            self.sendReplyToEdge(frame, str({"status": 22, "content": {"msg": e}}))
-        else:
-            return msg_dict
 
 
     ## TODO: make it security & reliable
@@ -84,19 +82,18 @@ class Fog:
                 # Receive message from the Edge first
                 frame, message_edge = self.getRequestFromEdge()
 
-                if message_edge.lower() == "quit":
-                    message_to_edge = "Bye " + frame
+                if message_edge["event"] == "quit":
+                    message_to_edge = template.format(0, "quit", {"msg": "Bye " + frame})
                     self.sendReplyToEdge(frame, message_to_edge)
                     del self.frames[frame]
                     continue
 
-                msg_dict = self.filter(frame, message_edge)
-                if msg_dict == None:
+                if message_edge == None:
                     continue
 
-                if msg_dict["event"].lower() == "activate":
+                if message_edge["event"].lower() == "activate":
                     # send from rpi1, need to activate rpi2
-                    frame2 = msg_dict["content"]["device"]
+                    frame2 = message_edge["content"]["device"]
                     self.frame_pair[frame2] = frame
                     self.sendReplyToEdge(frame2, str({"event": "activate", "content": {"msg": "activate"}}))
                     continue
@@ -104,14 +101,12 @@ class Fog:
 
                 # else, normal request
                 # Pass the message to the Cloud
-                request = message_edge
+                request = str(message_edge)
                 self.sendRequestToCloud(request)
 
                 #  Get the reply from the cloud.
                 message_cloud = self.getReplyFromCloud()
-
-                cloud_dict = eval(message_cloud)
-                if cloud_dict["event"] == "scan":
+                if message_cloud["event"] == "scan":
                     self.sendReplyToEdge(self.frame_pair[frame], message_cloud)
                     continue
 
@@ -125,8 +120,8 @@ class Fog:
             except Exception as e:
                 # for all frame connected, self.sendReplyToEdge(frame, "Bye")
                 self.disconnetAllFrame()
-                self._log.logging.Error(str(e))
-                self._error_log.logging.Error(str(e))
+                self._log.logger.Error(str(e))
+                self._error_log.logger.Error(str(e))
                 break
 
 

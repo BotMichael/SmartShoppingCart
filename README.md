@@ -1,20 +1,52 @@
 Edge Computing System  
-<br>├── data
-<br>│   ├── Account.txt
-<br>│   ├── Item_Region.txt
-<br>│   └── Price.txt
+
+For each device, only need to download the corresponding directory.
+
 <br>├── src
 <br>│   ├── cloud
+<br>│   │   ├── log
+<br>│   │   │   ├── logger.py
+<br>│   │   │   ├── Cloud.log
+<br>│   │   ├── data
+<br>│   │   │   ├── Account.txt
+<br>│   │   │   ├── Item_Region.txt
+<br>│   │   │   └── Price.txt
 <br>│   │   ├── Cloud_Computation.py
 <br>│   │   ├── Cloud_DataParser.py
+<br>│   │   └── Cloud_server.py
 <br>│   │   └── get_path.py
+<br>│   │   └── generate_key.py
+<br>│   │   └── requirements.txt
+<br>│   └── fog
+<br>│   │   ├── log
+<br>│   │   │   ├── logger.py
+<br>│   │   │   ├── Fog.log
+<br>│   │   ├── Fog.py
+<br>│   │   ├── Global_Var.py
+<br>│   │   └── requirements.txt
 <br>│   └── edge
-<br>│       ├── Sample_TFLite_model
-<br>│       │   ├── detect.tflite
-<br>│       │   └── labelmap.txt
-<br>│       ├── Edge_Client_Interface.py
-<br>│       ├── TFLite_detection_face.py
-<br>│       └── TFLite_detection_image.py
+<br>│       ├── rpi1
+<br>│       │   ├── log
+<br>│       │   │   ├── logger.py
+<br>│       │   │   ├── Edge_rpi1_000.log
+<br>│       │   ├── Sample_TFLite_model
+<br>│       │   │   ├── detect.tflite
+<br>│       │   │   └── labelmap.txt
+<br>│       │   ├── Edge_Client_Interface.py
+<br>│       │   ├── Global_Var.py
+<br>│       │   ├── TFLite_detection_face.py
+<br>│       │   ├── requirements.txt
+<br>│       ├── rpi2
+<br>│           ├── log
+<br>│           │   ├── logger.py
+<br>│           │   ├── Edge_rpi2_000.log
+<br>│           ├── Sample_TFLite_model
+<br>│           │   ├── detect.tflite
+<br>│           │   └── labelmap.txt
+<br>│           ├── Edge_Client_Interface.py
+<br>│           ├── Global_Var.py
+<br>│           └── TFLite_detection_image.py
+<br>│           └── requirements.txt
 <br>├── test
 <br>│   └── Edge_Client_test.py
 <br>│       ├── Item_Region.txt
@@ -47,6 +79,10 @@ Process:
         
 Current Merchandise List
 * data/Item_Region.txt
+
++++++++++++++++++++++++++
+﹞5.29
+- refactory structure
 
 +++++++++++++++++++++++++
 ﹞5.21 

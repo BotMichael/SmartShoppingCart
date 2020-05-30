@@ -2,13 +2,10 @@
 '''
     for testing fog's and cloud's functionality
 '''
-import zmq
 import sys
-import time
 import os
 sys.path.append(os.getcwd())
-import Global_Var
-from src.edge.Edge_Client_Interface import Edge_Client_Interface
+from . import Edge_Client_Interface
 
 template = '{{ "device": "{}", "event": "{}", "content" : {} }}'
 # message = template.format('rpi1_1', 'sed', '{}')

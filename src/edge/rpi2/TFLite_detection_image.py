@@ -197,7 +197,7 @@ def get_item_dictionary():
 
         # All the results have been drawn on the image, now display the image
     #     cv2.imshow('Object detector', image)
-        cv2.imwrite("detected_test.jpg",image)
+        cv2.imwrite("detected_test.jpg", image)
         print(Counter(result_label))
 
         # Press any key to continue to next image, or press 'q' to quit

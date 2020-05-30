@@ -1,13 +1,9 @@
 # Cloud_Server.py
 
-import os
-import sys
-sys.path.append(os.getcwd() + "\\src\\util")
-
 import zmq
-import Global_Var
+from Global_Var import CLOUD_PORT, CLOUD_PORT
 from Cloud_Computation import Cloud_Computation
-from Logger import CloudLogger, ErrorLogger
+from log.Logger import CloudLogger, ErrorLogger
 
 template = "{{ 'event':'{}', 'status':{}, 'content':{} }}"
 
@@ -22,8 +18,8 @@ class Cloud_Server:
         self.context = zmq.Context()
         self.socket = self.context.socket(zmq.REP)
         # self.socket.setsockopt(zmq.LINGER, 3000)      # The message will remain in the socket for 3 seconds if failing to send to the cloud 
-        self.socket.bind("tcp://*:%s" % Global_Var.CLOUD_PORT)
-        self._log.logger.info("Bind to port:" + "tcp://*:%s" % Global_Var.CLOUD_PORT)
+        self.socket.bind("tcp://*:%s" % CLOUD_PORT)
+        self._log.logger.info("Bind to port:" + "tcp://*:%s" % CLOUD_PORT)
 
         #####
         # Computation part
@@ -33,6 +29,11 @@ class Cloud_Server:
     def getRequestFromFog(self):
         message = self.socket.recv().decode("utf-8")
         self._log.logger.info("Received request: " + message)
+        try:
+            message = eval(message)
+        except Exception as e:
+            self._log.logger.error(" Error when eval(message)" + str(e))
+            self._error_log.logger.error(" Error when eval(message)" + str(e))
         return message
 
     
@@ -81,13 +82,16 @@ class Cloud_Server:
             status, content = self.computation.getCheckOut(userID, password, store, price, items)
             return template.format("checkout", status, content)
 
+        elif msg["event"] == "pubkey":
+            status, pubkey = self.computation.getPubKey()
+            return template.format("pubkey", status, str(pubkey))
+
 
     def run(self):
         while True:
             try:
                 #  Wait for next request from client
-                request = self.getRequestFromFog()
-                msg = eval(request)
+                msg = self.getRequestFromFog()
                 reply = self.getReply(msg)
                 self.sendReplyToFog(reply)
             except Exception as e:

@@ -2,16 +2,14 @@
 
 
 import os
-import sys
-sys.path.append(os.getcwd() + "\\src\\util")
 
 import rsa
 import Cloud_DataParser
 from get_path import MarketMap
 from Error_code import *
-import Global_Var
 
-from Logger import ErrorLogger, CloudLogger
+
+from log.Logger import ErrorLogger, CloudLogger
 
 
 
@@ -22,7 +20,7 @@ class Cloud_Computation:
         self.price_dict = temp[1]
         self.account_dict = temp[2]
         self.MarketMap = MarketMap(self.pos_dict)
-        self.privkey = Cloud_DataParser.get_private_key()
+        self.pubkey, self.privkey = Cloud_DataParser.get_pub_private_key()
 
         self._log = CloudLogger()
         self._error_log = ErrorLogger()
@@ -32,14 +30,16 @@ class Cloud_Computation:
         self._log.logger.info(str(self.MarketMap))
 
 
-    def _rsa_decrypt(self, crypto):
-        content = rsa.decrypt(crypto, self.privkey)
-        content = content.decode('utf-8')
-        return content
 
+    def getPubKey(self):
+        return 0, {"pubkey": str(self.pubkey)}
 
     def register(self, userID, password):
-        i = Cloud_DataParser.updateAccount(userID, password)
+        if userID in self.account_dict:
+            return ERR_001, {"msg": ERR_MSG[ERR_003]}
+
+        pw = self._rsa_decrypt(eval(password))
+        i = Cloud_DataParser.updateAccount(userID, pw)
         if i == 0:
             # update the account dict
             self.account_dict = Cloud_DataParser.getDataDict()[2]
@@ -83,7 +83,15 @@ class Cloud_Computation:
             self._store_shopping(userID, items)
         return SUC_000, {"msg": ERR_MSG[SUC_000]}
 
-    ## TODO: security
+
+
+
+    def _rsa_decrypt(self, crypto):
+        content = rsa.decrypt(crypto, self.privkey)
+        content = content.decode('utf-8')
+        return content
+
+
     def _log_in(self, userID, password):
         password = self._rsa_decrypt(eval(password))
         self._log.logger.info("log in: " + str(self.account_dict))

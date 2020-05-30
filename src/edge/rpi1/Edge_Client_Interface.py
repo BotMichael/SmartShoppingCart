@@ -1,15 +1,14 @@
 # Edge_Client_Interface.py
 
-import sys
-import os
-sys.path.append(os.getcwd() + "\\src\\util")
-
 import zmq
-import time
 import rsa
-import Global_Var
-from Logger import EdgeLogger, ErrorLogger
+from rsa import PublicKey
 
+import Global_Var
+from log.Logger import EdgeLogger, ErrorLogger
+
+
+template = '{{ "device": "{}", "event": "{}", "content" : {} }}'
 
 class Edge_Client_Interface:
     def __init__(self, device_ID: str):
@@ -25,14 +24,16 @@ class Edge_Client_Interface:
         self.socket.connect("tcp://" + Global_Var.FOG_IP + ":%s" % Global_Var.FOG_PORT)
 
         self._log.logger.info(device_ID + ": connect to port: tcp://" + Global_Var.FOG_IP + ":%s" % Global_Var.FOG_PORT)
-        
+
         self.pubkey = self._get_public_key()
 
 
     def _get_public_key(self):
-        with open(Global_Var.pubkey_file) as publickfile:
-            p = publickfile.read()
-            pubkey = rsa.PublicKey.load_pkcs1(p)
+        self.sendRequestToFog(template.format(self.id, "pubkey", {"msg": "Get public key and build up connection"}))
+        message = self.getReplyFromFog()
+        if message["status"] == -1:
+            return ""
+        pubkey = eval(message["content"]["pubkey"])
         return pubkey
 
 
@@ -44,6 +45,11 @@ class Edge_Client_Interface:
     def getReplyFromFog(self):
         message = self.socket.recv().decode("utf-8")
         self._log.logger.info(self.id + ": Received reply from the Fog: " + message)
+        try:
+            message = eval(message)
+        except Exception as e:
+            self._log.logger.error(self.id + " Error when eval(message)" + e)
+            self._error_log.logger.error(self.id + " Error when eval(message)" + e)
         return message
 
             
@@ -51,7 +57,6 @@ class Edge_Client_Interface:
         content = d_str.encode('utf-8')
         crypto = rsa.encrypt(content, self.pubkey)
         return crypto
-
 
 
     def __del__(self):

@@ -6,7 +6,7 @@
 
 # from src.edge.TFLite_detection_face import face_activate
 from Edge_Client_Interface import Edge_Client_Interface
-
+import time
 template = '{{ "device": "{}", "event": "{}", "content" : {} }}'
 valid_request = {"find path", "checkout", "quit", "price"}
 
@@ -42,10 +42,11 @@ class Edge_Client_RP1(Edge_Client_Interface):
         while(reply not in ("N", "Y", "R")):
             print("Invalid reply. Please type again. Do you want to register or relogin?" )
             reply = str(input("(Y - Yes / N - No / R - Relogin) "))
+            reply = reply.upper()
 
         if (reply == "N"):
             print("Bye.")
-            self.sendRequestToFog("Quit")
+            self.sendRequestToFog(template.format(self.id, "quit", 0))
             message = self.getReplyFromFog()
             return (2, message)
         elif (reply == "Y"):
@@ -55,13 +56,12 @@ class Edge_Client_RP1(Edge_Client_Interface):
             info = {"userID": request_name, "password": str(self.rsa_encrypt(request_pw))}
             self.sendRequestToFog(template.format(self.id, "register", info))
             message = self.getReplyFromFog()
-            message_dict = eval(message)
-            if message_dict["status"] == 0:
+            if message["status"] == 0:
                 print("Register successfully. Please re-login.")
                 self.REGISTER = True
-                return (0, message_dict)
+                return (0, message)
             else:
-                return (1, message_dict)
+                return (1, message)
         elif (reply == "R"):
             return (3, None)
 
@@ -73,27 +73,27 @@ class Edge_Client_RP1(Edge_Client_Interface):
                      1 - fail
                      2 - quit
         '''
+
         while not self.LOGIN:
-            request_name = self._getUserInput("username", "(If you don't have an account you can press whatever you like) ")
+            request_name = self._getUserInput("username")
             request_pw = self._getUserInput("password")
             encrypt = self.rsa_encrypt(request_pw)
             info = {"userID": request_name, "password": str(encrypt)}
             self.sendRequestToFog(template.format(self.id, "login", info))
             self.LOGIN = True
             message = self.getReplyFromFog()
-            message_dict = eval(message)
             # If fail to login: printout the error message and ask for registration or re-login
-            while message_dict["status"] == 1:
-                print("Error:", message_dict["content"]["msg"])
+            while message["status"] == 1:
+                print("Error:", message["content"]["msg"])
                 self.LOGIN = False
-                status, message_dict = self._register()
+                status, message = self._register()
                 if(status == 2):
+                    self.sendRequestToFog(template.format(self.id, "quit", 0))
+                    message = self.getReplyFromFog()
                     return 2
                 elif(status == 3):
                     print("Please relogin.")
                     break
-        if(self.LOGIN):
-            self.user = request_name
 
 
     def _activation(self)-> "status: int":
@@ -102,26 +102,25 @@ class Edge_Client_RP1(Edge_Client_Interface):
             request = "activate_system"
             if request == "activate_system":
                 self.ACTIVATE = True
-                return self._login()
+                return
 
 
     def _scan(self) -> "message_dict":
         self.sendRequestToFog(template.format(self.id, "activate", {"device": "rpi2_000"}))
         #  Get the reply.
         message = self.getReplyFromFog()
-        message_dict = eval(message)
-        if message_dict["status"] == 0:
+        if message["status"] == 0:
             print("Success.")
-            self.cart = message_dict["content"]["item"]
-            self.total_price = message_dict["content"]["price"]
+            self.cart = message["content"]["item"]
+            self.total_price = message["content"]["price"]
             for key in self.cart:
                 if key != "price":
                     num   = self.cart[key]["num"]
                     price = self.cart[key]["price"]
                     print(f"{key}: {num} x ${price}")
         else:
-            print("Error:", message_dict["content"]["msg"])
-        return message_dict
+            print("Error:", message["content"]["msg"])
+        return message
 
 
     def _checkout(self):
@@ -142,12 +141,13 @@ class Edge_Client_RP1(Edge_Client_Interface):
                                     "password": str(self.rsa_encrypt(userpw)), "price": self.total_price, "item": self.cart})
                     )
                 message = self.getReplyFromFog()
-                message_dict = eval(message)
-                if message_dict["status"] == 0:
-                    print("Success:", message_dict["content"]["msg"])
+                if message["status"] == 0:
+                    print("Success:", message["content"]["msg"])
                 else:
-                    print("Error:", message_dict["content"]["msg"])
-            return message_dict
+                    print("Error:", message["content"]["msg"])
+                return message
+            else:
+                print("Error:", scan_dict["content"]["msg"])
 
 
     def _find_path(self):
@@ -156,20 +156,27 @@ class Edge_Client_RP1(Edge_Client_Interface):
         self.sendRequestToFog(
             template.format(self.id, "path", {"item": item, "current_position": current_position}))
         message = self.getReplyFromFog()
-        message_dict = eval(message)
-        if message_dict["status"] == 0:
-            print("The path is:", message_dict["content"]["path"])
+        if message["status"] == 0:
+            print("The path is:", message["content"]["path"])
         else:
-            print("Error:", message_dict["content"]["msg"])
+            print("Error:", message["content"]["msg"])
 
 
     def run(self):
         while True:
-            activation_status = self._activation()
-            if(activation_status == 2):
-                self.sendRequestToFog("quit")
-                message = self.getReplyFromFog()
-                return
+            self.ACTIVATE = False
+            self.LOGIN = False
+            self.REGISTER = False
+            self.cart = {}
+            self.total_price = 0
+
+            while not self.ACTIVATE:
+                self._activation()
+
+            while not self.LOGIN:
+                status = self._login()
+                if status == 2:
+                    continue
 
             print("Login successfully. Welcome " + self.user)
             request = self._getUserInput("request", "(find path / price / checkout / quit)").lower()
@@ -200,19 +207,14 @@ class Edge_Client_RP1(Edge_Client_Interface):
                 self._log.logger.error(str(e))
                 self._error_log.logger.error(str(e))
             
-            self.sendRequestToFog("quit")
+            self.sendRequestToFog(template.format(self.id, "quit", 0))
             message = self.getReplyFromFog()
             print("Thank you for using the smart shopping cart. Have a nice day!")
-            if message != "Bye " + self.id:
+            if message["content"]["msg"] != "Bye " + self.id:
                 print("This device might not quit properly.")
                 self._log.logger.error(self.id + " might not quit properly.")
                 self._error_log.logger.error(self.id + " might not quit properly.")
 
-            self.ACTIVATE = False
-            self.LOGIN = False
-            self.REGISTER = False
-            self.cart = {}
-            self.total_price = 0
 
 
 if __name__ == "__main__":

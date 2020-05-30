@@ -2,5 +2,7 @@
 *.xml
 *.iml
 *.pyc
-*.pyc
-*.pyc
+*.cpython-37.pyc
+src/cloud/__pycache__/get_path.cpython-37.pyc
+src/cloud/__pycache__/Cloud_DataParser.cpython-37.pyc
+src/cloud/__pycache__/Cloud_Computation.cpython-37.pyc
