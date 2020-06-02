@@ -19,6 +19,8 @@ class Edge_Client_RP1(Edge_Client_Interface):
         self.user = ""
         self.cart = {}
         self.total_price = 0
+        self.photo = None
+        self.pw = None
 
 
     def _getUserInput(self, subject: str, extra = "") -> str:
@@ -54,7 +56,8 @@ class Edge_Client_RP1(Edge_Client_Interface):
             #request_name = self._getUserInput("username")
             request_name = self.photo
             request_pw = self._getUserInput("password")
-            info = {"userID": request_name, "password": str(self.rsa_encrypt(request_pw))}
+            self.pw=str(self.rsa_encrypt(request_pw))
+            info = {"userID": request_name, "password": self.pw}
             self.sendRequestToFog(template.format(self.id, "register", info))
             message = self.getReplyFromFog()
             if message["status"] == 0:
@@ -132,8 +135,8 @@ class Edge_Client_RP1(Edge_Client_Interface):
             return {'event': 'checkout', 'status': 1, 'content': {'msg': 'Cart is empty'}}
         else:
             if(scan_dict["status"] == 0):
-                username = self._getUserInput("username")
-                userpw = self._getUserInput("password")
+                username = self.photo#self._getUserInput("username")
+                userpw = self.pw#self._getUserInput("password")
                 store_shopping_store = input("Do you want to store your shopping history? (Y/N) ")
                 while(store_shopping_store == ""):
                     store_shopping_store = input("Do you want to store your shopping history? (Y/N) ")
