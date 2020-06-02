@@ -13,7 +13,8 @@
     # I added my own method of drawing boxes and labels using OpenCV.
 
     # Import packages
-
+import sys
+sys.path.append("/usr/local/lib/python3.7/dist-packages")
 import os
 import argparse
 import cv2
