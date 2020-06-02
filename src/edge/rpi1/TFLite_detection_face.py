@@ -22,9 +22,15 @@ import sys
 import glob
 import importlib.util
 from collections import Counter
+import face_recognition
 
 
-def face_activate(): 
+def face_activate():
+    '''
+    In phase 3, this function should return (request,str_photo_embedding)
+    '''
+
+
     # Define and parse input arguments
     parser = argparse.ArgumentParser()
     # parser.add_argument('--modeldir', help='Folder the .tflite file is located in',
@@ -209,8 +215,10 @@ def face_activate():
 #     cv2.destroyAllWindows()
     print(result_label)
     if 'person' in result_label.keys() and result_label['person'] > 0.50:
-        return 'activate_system'
-    else: return 'awiting activate'
+        image = face_recognition.load_image_file(IM_NAME)
+        str_face_embedding = str(list(face_recognition.face_encodings(image)[0]))
+        return 'activate_system',str_face_embedding
+    else: return 'awiting activate',None
 
 if __name__=="__main__":
     face_activate()

@@ -4,7 +4,7 @@
 '''
 
 
-# from src.edge.TFLite_detection_face import face_activate
+from src.edge.TFLite_detection_face import face_activate
 from Edge_Client_Interface import Edge_Client_Interface
 import time
 template = '{{ "device": "{}", "event": "{}", "content" : {} }}'
@@ -51,7 +51,8 @@ class Edge_Client_RP1(Edge_Client_Interface):
             return (2, message)
         elif (reply == "Y"):
             # Register
-            request_name = self._getUserInput("username")
+            #request_name = self._getUserInput("username")
+            request_name = self.photo
             request_pw = self._getUserInput("password")
             info = {"userID": request_name, "password": str(self.rsa_encrypt(request_pw))}
             self.sendRequestToFog(template.format(self.id, "register", info))
@@ -75,7 +76,8 @@ class Edge_Client_RP1(Edge_Client_Interface):
         '''
 
         while not self.LOGIN:
-            request_name = self._getUserInput("username")
+            #request_name = self._getUserInput("username")
+            request_name = self.photo
             request_pw = self._getUserInput("password")
             encrypt = self.rsa_encrypt(request_pw)
             info = {"userID": request_name, "password": str(encrypt)}
@@ -98,8 +100,8 @@ class Edge_Client_RP1(Edge_Client_Interface):
 
     def _activation(self)-> "status: int":
         while not self.ACTIVATE:
-            # request = str(face_activate())
-            request = "activate_system"
+            request,self.photo = face_activate()
+            #request = "activate_system"
             if request == "activate_system":
                 self.ACTIVATE = True
                 return
