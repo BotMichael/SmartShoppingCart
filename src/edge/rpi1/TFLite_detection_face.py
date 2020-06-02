@@ -114,7 +114,7 @@ def face_activate():
         PATH_TO_IMAGES = os.path.join(CWD_PATH,IM_NAME)
         images = glob.glob(PATH_TO_IMAGES)
 
-    _path = "/home/pi/tflite1/CS190_P2/src/edge/Sample_TFLite_model"
+    _path = "./Sample_TFLite_model"
     # Path to .tflite file, which contains the model that is used for object detection
     PATH_TO_CKPT = f"{_path}/detect.tflite"#os.path.join(CWD_PATH,MODEL_NAME,GRAPH_NAME)
 

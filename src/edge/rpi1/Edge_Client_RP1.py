@@ -4,7 +4,7 @@
 '''
 
 
-from src.edge.TFLite_detection_face import face_activate
+from TFLite_detection_face import face_activate
 from Edge_Client_Interface import Edge_Client_Interface
 import time
 template = '{{ "device": "{}", "event": "{}", "content" : {} }}'
