@@ -92,14 +92,14 @@ class ui_Menu(QMainWindow):
         
     def slot_btn_FIND_ITEM_function(self):
         self.hide()
-        from Main import First_UI
-        self.f = First_UI()
+        from FIND import ui_Find_Item
+        self.f = ui_Find_Item()
         self.f.show()
     
     def slot_btn_CART_function(self):
         self.hide()
-        from Main import First_UI
-        self.f = First_UI()
+        from MyCart import ui_Cart
+        self.f = ui_Cart()
         self.f.show()
 
     def retranslateUi(self, MainWindow):
