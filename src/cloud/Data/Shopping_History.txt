@@ -1,2 +1,0 @@
-c|apple|3|orange|1
-b|apple|3|orange|1

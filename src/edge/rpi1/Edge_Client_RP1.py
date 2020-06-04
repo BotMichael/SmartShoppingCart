@@ -15,8 +15,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
         Edge_Client_Interface.__init__(self, "rpi1_000")
         self.ACTIVATE = False
         self.LOGIN = False
-        self.REGISTER = False
-        self.user = ""
+        self.user = "customer"
         self.cart = {}
         self.total_price = 0
         self.photo = None
@@ -38,36 +37,58 @@ class Edge_Client_RP1(Edge_Client_Interface):
                               2 - quit
                               3 - relogin
         '''
-        print("Do you want to register or relogin?")
-        reply = str(input("(Y - Yes / N - No / R - Relogin) "))
-        reply = reply.upper()
-        while(reply not in ("N", "Y", "R")):
-            print("Invalid reply. Please type again. Do you want to register or relogin?" )
-            reply = str(input("(Y - Yes / N - No / R - Relogin) "))
-            reply = reply.upper()
 
-        if (reply == "N"):
-            print("Bye.")
-            self.sendRequestToFog(template.format(self.id, "quit", 0))
-            message = self.getReplyFromFog()
-            return (2, message)
-        elif (reply == "Y"):
-            # Register
-            #request_name = self._getUserInput("username")
-            request_name = self.photo
-            request_pw = self._getUserInput("password")
-            self.pw=str(self.rsa_encrypt(request_pw))
-            info = {"userID": request_name, "password": self.pw}
-            self.sendRequestToFog(template.format(self.id, "register", info))
-            message = self.getReplyFromFog()
-            if message["status"] == 0:
-                print("Register successfully. Please re-login.")
-                self.REGISTER = True
-                return (0, message)
-            else:
-                return (1, message)
-        elif (reply == "R"):
-            return (3, None)
+
+        request_face = self.photo
+        request_userID = self._getUserInput("phone #")
+        request_pw = self._getUserInput("password")
+        request_pw = str(self.rsa_encrypt(request_pw))
+        self.pw = request_pw # for debug
+
+        info = {"request_face": request_face, "userID": request_userID, "password": self.pw}
+
+        self.sendRequestToFog(template.format(self.id, "register", info))
+        message = self.getReplyFromFog()
+        if message["status"] == 0:
+            self.LOGIN = True
+            self.user = request_userID
+
+        # else, just not login and user = "customer"
+        else:
+            self.user = "customer"
+
+    #         print("Register successfully. Please re-login.")
+    #         return (0, message)
+        # print("Do you want to register or relogin?")
+        # reply = str(input("(Y - Yes / N - No / R - Relogin) "))
+        # reply = reply.upper()
+        # while(reply not in ("N", "Y", "R")):
+        #     print("Invalid reply. Please type again. Do you want to register or relogin?" )
+        #     reply = str(input("(Y - Yes / N - No / R - Relogin) "))
+        #     reply = reply.upper()
+        #
+        # if (reply == "N"):
+        #     print("Bye.")
+        #     self.sendRequestToFog(template.format(self.id, "quit", 0))
+        #     message = self.getReplyFromFog()
+        #     return (2, message)
+        # elif (reply == "Y"):
+        #     # Register
+        #     #request_name = self._getUserInput("username")
+        #     request_name = self.photo
+        #     request_pw = self._getUserInput("password")
+        #     self.pw=str(self.rsa_encrypt(request_pw))
+        #     info = {"userID": request_name, "password": self.pw}
+        #     self.sendRequestToFog(template.format(self.id, "register", info))
+        #     message = self.getReplyFromFog()
+        #     if message["status"] == 0:
+        #         print("Register successfully. Please re-login.")
+        #         self.REGISTER = True
+        #         return (0, message)
+        #     else:
+        #         return (1, message)
+        # elif (reply == "R"):
+        #     return (3, None)
 
 
     def _login(self) -> "status: int":
@@ -78,33 +99,27 @@ class Edge_Client_RP1(Edge_Client_Interface):
                      2 - quit
         '''
 
-        while not self.LOGIN:
-            #request_name = self._getUserInput("username")
-            request_name = self.photo
-            request_pw = self._getUserInput("password")
-            encrypt = self.rsa_encrypt(request_pw)
-            info = {"userID": request_name, "password": str(encrypt)}
-            self.sendRequestToFog(template.format(self.id, "login", info))
+        #request_name = self._getUserInput("username")
+        request_name = self.photo
+        info = {"face": request_name}
+        self.sendRequestToFog(template.format(self.id, "login", info))
+        message = self.getReplyFromFog()
+
+        # if success
+        if message["status"] == 0:
             self.LOGIN = True
-            message = self.getReplyFromFog()
-            # If fail to login: printout the error message and ask for registration or re-login
-            while message["status"] == 1:
-                print("Error:", message["content"]["msg"])
-                self.LOGIN = False
-                status, message = self._register()
-                if(status == 2):
-                    self.sendRequestToFog(template.format(self.id, "quit", 0))
-                    message = self.getReplyFromFog()
-                    return 2
-                elif(status == 3):
-                    print("Please relogin.")
-                    break
+            self.user = message["content"]["userID"]
+
+        # if unknown user
+        elif message["status"] == 1:
+            self._register()
+
 
 
     def _activation(self)-> "status: int":
         while not self.ACTIVATE:
-            request,self.photo = face_activate()
-            #request = "activate_system"
+            # request,self.photo = face_activate()
+            request = "activate_system" # for debug
             if request == "activate_system":
                 self.ACTIVATE = True
                 return
@@ -135,14 +150,22 @@ class Edge_Client_RP1(Edge_Client_Interface):
             return {'event': 'checkout', 'status': 1, 'content': {'msg': 'Cart is empty'}}
         else:
             if(scan_dict["status"] == 0):
-                username = self.photo#self._getUserInput("username")
-                userpw = self.pw#self._getUserInput("password")
-                store_shopping_store = input("Do you want to store your shopping history? (Y/N) ")
-                while(store_shopping_store == ""):
+                userpw = "999999"
+                store_shopping_store = False
+                if self.LOGIN:
+                    # username = self.user #self._getUserInput("username")
+                    userpw = self.pw # for debug
+                    # userpw = self._getUserInput("password")
                     store_shopping_store = input("Do you want to store your shopping history? (Y/N) ")
+                    while(store_shopping_store == ""):
+                        store_shopping_store = input("Do you want to store your shopping history? (Y/N) ")
+                    if store_shopping_store == "Y":
+                        store_shopping_store = True
+                else:
+                    self._register()
 
                 self.sendRequestToFog(
-                    template.format(self.id, "checkout", {"userID": username, "store": store_shopping_store, 
+                    template.format(self.id, "checkout", {"userID": self.user, "store": store_shopping_store,
                                     "password": str(self.rsa_encrypt(userpw)), "price": self.total_price, "item": self.cart})
                     )
                 message = self.getReplyFromFog()
@@ -171,17 +194,15 @@ class Edge_Client_RP1(Edge_Client_Interface):
         while True:
             self.ACTIVATE = False
             self.LOGIN = False
-            self.REGISTER = False
             self.cart = {}
             self.total_price = 0
+            self.user = "customer"
 
             while not self.ACTIVATE:
                 self._activation()
 
-            while not self.LOGIN:
-                status = self._login()
-                if status == 2:
-                    continue
+            self._login() # will update self.LOGIN, self.user
+
 
             print("Login successfully. Welcome " + self.user)
             request = self._getUserInput("request", "(find path / price / checkout / quit)").lower()

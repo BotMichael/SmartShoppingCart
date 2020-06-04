@@ -3,11 +3,13 @@
 import os
 from generate_key import generate_rsa_key
 import rsa
+from datetime import datetime
 
 Position_file = "Data/Item_Region.txt"
 Price_file = "Data/Price.txt"
 Account_file = "Data/Account.txt"
 History_file = "Data/Shopping_History.txt"
+Face_file = "Data/face_encoding.txt"
 
 pubkey_file = "Data/public.pem"
 privkey_file = "Data/private.pem"
@@ -60,11 +62,12 @@ def getUserHistory(userID:str):
         for line in f:
             line = line.strip().split("|")
             if line[0] == userID:
-                items.append([line[i] for i in range(1,len(line),2)])
+                items.append([line[i] for i in range(2,len(line),2)])
         return items
 
 
 def updateUserHistory(hist: []):
+    hist = [str(datetime.now())] + hist
     try:
         with open(History_file, "a+") as f:
             f.write('|'.join(hist) + "\n")
@@ -72,3 +75,15 @@ def updateUserHistory(hist: []):
         return (1, str(e))
     else:
         return (0, "")
+
+
+def getFaceEncodings():
+    with open(Face_file) as f:
+        faces = []
+        names = []
+        for line in f:
+            line = line.strip().split('|')
+            faces.append(line[0])
+            names.append(line[1])
+        return faces, names
+

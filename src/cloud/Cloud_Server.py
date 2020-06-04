@@ -46,9 +46,8 @@ class Cloud_Server:
         assert isinstance(msg, dict)
 
         if msg["event"] == "login":
-            userID = msg["content"]["userID"]
-            password = msg["content"]["password"]
-            status, content = self.computation.getRecommandPath(userID, password)
+            face_encoding = msg["content"]["face"]
+            status, content = self.computation.recogFace(face_encoding)
             return template.format("login", status, content)
 
         

@@ -7,7 +7,7 @@ import rsa
 import Cloud_DataParser
 from get_path import MarketMap
 from Error_code import *
-
+import face_recognition
 
 from log.Logger import ErrorLogger, CloudLogger
 
@@ -72,18 +72,39 @@ class Cloud_Computation:
 
 
     def getCheckOut(self, userID, password, store, price, items):
-        if not self._log_in(userID, password):
+        if userID != "customer" and not self._log_in(userID, password):
             return ERR_001, {"msg": ERR_MSG[ERR_001]}
 
-        if self._check_out(userID, price):
+        if self._check_out(price):
             return ERR_002, {"msg": ERR_MSG[ERR_002]}
 
         self._log.logger.info("store: " + store)
-        if store == "Y":
-            self._store_shopping(userID, items)
+        if not store:
+            userID = "customer"
+
+        self._store_shopping(userID, items)
         return SUC_000, {"msg": ERR_MSG[SUC_000]}
 
 
+    def recogFace(self, face_encoding):
+        name = self._recog_face(face_encoding)
+
+        if name == "Unknown":
+            return ERR_001, {"msg": ERR_MSG[ERR_001]}
+
+        return SUC_000, {"userID": name}
+
+    def _recog_face(self, face_encoding):
+        known_face_encodings, known_face_names = Cloud_DataParser.getFaceEncodings()
+        matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+
+        name = "Unknown"
+        # If a match was found in known_face_encodings, just use the first one.
+        if True in matches:
+            first_match_index = matches.index(True)
+            name = known_face_names[first_match_index]
+
+        return name
 
 
     def _rsa_decrypt(self, crypto):
@@ -113,7 +134,7 @@ class Cloud_Computation:
         return price, detail
 
 
-    def _check_out(self, userID: str, price: str):
+    def _check_out(self, price: str):
         return 0
 
 
