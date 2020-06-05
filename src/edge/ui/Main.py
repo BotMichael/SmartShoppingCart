@@ -75,7 +75,10 @@ class First_UI(QMainWindow):
 
     def slot_btn_function(self):
         self.hide()
-
+#        from TFLite_detection_face import face_activate
+        # request, photo = face_activate()
+        
+        
         detect_person = True # face recognition here
         
         if not detect_person:
@@ -101,107 +104,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-##class UI_1_1(QMainWindow):
-##    def __init__(self):
-##        super(UI_1_1, self).__init__()
-##        self.init_ui()
-## 
-##    def init_ui(self):
-##        self.centralwidget = QtWidgets.QWidget(self)
-##        self.centralwidget.setObjectName("centralwidget")
-##        self.resize(450, 600)
-##        self.setWindowTitle('New User')
-##
-##        self._banner = QtWidgets.QLabel(self)
-##        self._banner.setGeometry(70, 20, 301, 111)
-##        font = QtGui.QFont()
-##        font.setFamily("Comic Sans MS")
-##        font.setPointSize(48)
-##        self._banner.setFont(font)
-##        self._banner.setObjectName("_banner")
-##        self._banner.show()
-##        _translate = QtCore.QCoreApplication.translate
-##        self._banner.setText(_translate("MainWindow", "New User"))
-##        
-##        self.btn = QPushButton('Register', self)
-##        self.btn.setGeometry(120, 170, 221, 131)
-##        font = QtGui.QFont()
-##        font.setFamily("Comic Sans MS")
-##        font.setPointSize(36)
-##        self.btn.setFont(font)
-##        self.btn.clicked.connect(self.slot_btn1_function)
-##
-##        self.btn2 = QPushButton('Quit', self)
-##        self.btn2.setGeometry(120, 350, 221, 131)
-##        font = QtGui.QFont()
-##        font.setFamily("Comic Sans MS")
-##        font.setPointSize(36)
-##        self.btn2.setFont(font)
-##        self.btn2.clicked.connect(self.slot_btn2_function)
-##
-##        self.setCentralWidget(self.centralwidget)
-##        self.statusbar = QtWidgets.QStatusBar(self)
-##        self.statusbar.setObjectName("statusbar")
-##        self.setStatusBar(self.statusbar)
-##        
-##
-##
-##        #self.retranslateUi(self)
-##        QtCore.QMetaObject.connectSlotsByName(self)
-##
-##    def slot_btn1_function(self):
-##        self.hide()
-##        self.f = First_UI()
-##        self.f.show()
-## 
-##    def slot_btn2_function(self):
-##        self.hide()
-##        from Bye import BYE
-##        self.f = BYE()
-##        self.f.show()
-
-##class Bye(QMainWindow):
-##    def __init__(self):
-##        super(Bye, self).__init__()
-##        self.init_ui()
-## 
-##    def init_ui(self):
-##        self.centralwidget = QtWidgets.QWidget(self)
-##        self.centralwidget.setObjectName("centralwidget")
-##        self.resize(450, 600)
-##        self.setWindowTitle('Bye~')
-##
-##        self._banner = QtWidgets.QLabel(self)
-##        self._banner.setGeometry(70, 20, 301, 111)
-##        font = QtGui.QFont()
-##        font.setFamily("Comic Sans MS")
-##        font.setPointSize(48)
-##        self._banner.setFont(font)
-##        self._banner.setObjectName("_banner")
-##        self._banner.show()
-##        _translate = QtCore.QCoreApplication.translate
-##        self._banner.setText(_translate("MainWindow", "Bye~"))
-##        
-##        self.btn = QPushButton('Return Main', self)
-##        self.btn.setGeometry(50, 170, 300, 131)
-##        font = QtGui.QFont()
-##        font.setFamily("Comic Sans MS")
-##        font.setPointSize(36)
-##        self.btn.setFont(font)
-##        self.btn.clicked.connect(self.slot_btn1_function)
-##
-##        self.setCentralWidget(self.centralwidget)
-##        self.statusbar = QtWidgets.QStatusBar(self)
-##        self.statusbar.setObjectName("statusbar")
-##        self.setStatusBar(self.statusbar)
-##        
-##        QtCore.QMetaObject.connectSlotsByName(self)
-##
-##    def slot_btn1_function(self):
-##        self.hide()
-##        self.f = First_UI()
-##        self.f.show()
 
 
 

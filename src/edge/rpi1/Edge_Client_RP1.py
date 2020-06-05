@@ -6,6 +6,8 @@
 
 from TFLite_detection_face import face_activate
 from Edge_Client_Interface import Edge_Client_Interface
+from speech_rec import voice_recognition
+
 import time
 template = '{{ "device": "{}", "event": "{}", "content" : {} }}'
 valid_request = {"find path", "checkout", "quit", "price"}
@@ -23,9 +25,9 @@ class Edge_Client_RP1(Edge_Client_Interface):
 
 
     def _getUserInput(self, subject: str, extra = "") -> str:
-        result = str(input("Please type your " + subject + " " + extra + ": "))
+        result = voice_recognition() #str(input("Please type your " + subject + " " + extra + ": "))
         while(result == ""):
-            result = str(input(subject + " can't be empty. Please retype your " + subject + ": "))
+            result = voice_recognition()# str(input(subject + " can't be empty. Please retype your " + subject + ": "))
         return result
 
     
