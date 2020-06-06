@@ -82,6 +82,12 @@ class ui_Cart(QMainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.Welcome_banner.setText(_translate("MainWindow", "My Cart"))
         self.RETURN.setText(_translate("MainWindow", "Return"))
-        msg = "Total Price: $14.36\n-------------------\nbottle: 3x$2.3     \napple: 2x$1.0      \npineapple: 1x$3.99 \nbanana: 1x$1.47    \n"
+
+        f= open("receipt.txt","r")
+        msg = ""
+        for each in f:
+            msg += each 
+        #msg = "Total Price: $14.36\n-------------------\nbottle: 3x$2.3     \napple: 2x$1.0      \npineapple: 1x$3.99 \nbanana: 1x$1.47    \n"
+
         self.label.setText(_translate("MainWindow", msg))
         self.CHECKOUT.setText(_translate("MainWindow", "Checkout"))

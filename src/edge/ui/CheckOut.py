@@ -179,6 +179,15 @@ class ui_Checkout(QMainWindow):
         self.NUM_9.clicked.connect(self.slot_btn_NUM_9_function)
 
     def slot_btn_PAY_function(self):
+        f = open("id_info.txt","w")
+        it = iter(f)
+         
+        self.photo = next(it).rstrip()
+        self.username = next(it).rstrip()
+        for each in [self.photo,self.username]:
+                f.write(f"{each}\n")
+        f.close()
+        
         correct_password = self.password=="123" # check with cloud here
         if correct_password:
             self.hide()

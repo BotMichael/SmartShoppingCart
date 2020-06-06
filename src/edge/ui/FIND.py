@@ -15,6 +15,10 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton
 import sys
 
 
+from TFLite_detection_face import face_activate
+from Edge_Client_Interface import Edge_Client_Interface
+from speech_rec import voice_recognition
+
 
 class ui_Find_Item(QMainWindow):
 
@@ -76,9 +80,30 @@ class ui_Find_Item(QMainWindow):
     def slot_btn_ITEM_function(self):
         print("record audio here")# add speech recognition here
 
+        item = self._getUserAudioInput()
+
+        Edge_Client_Interface.sendRequestToFog(
+            template.format(self.id, "path", {"item": item})) # change here
+        message = Edge_Client_Interface.getReplyFromFog()
+        if message["status"] == 0:
+            # item name, region, price
+            item_info = "heard APPLE\n Region A\n $5 per each" # default 
+        else:
+            print("Error:", message["content"]["msg"])
+
+
+
         self.searched = True
         _translate = QtCore.QCoreApplication.translate
-        self.INFO.setText(_translate("MainWindow", "heard APPLE\n Region A\n $5 per each"))
+        self.INFO.setText(_translate("MainWindow", item_info))
+
+
+    def _getUserAudioInput(self, extra = "") -> str:
+        result = voice_recognition() #str(input("Please type your " + subject + " " + extra + ": "))
+        while(result == ""):
+            result = voice_recognition()# str(input(subject + " can't be empty. Please retype your " + subject + ": "))
+        return result
+
 
     def slot_btn_MAP_function(self):
         if self.searched:

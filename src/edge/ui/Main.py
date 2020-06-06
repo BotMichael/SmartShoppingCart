@@ -9,7 +9,7 @@
 
 
 import sys
-sys.path = sys.path+['', '/usr/lib/python37.zip', '/usr/lib/python3.7', '/usr/lib/python3.7/lib-dynload', '/home/pi/.local/lib/python3.7/site-packages', '/usr/local/lib/python3.7/dist-packages', '/usr/lib/python3/dist-packages']
+#sys.path = sys.path+['', '/usr/lib/python37.zip', '/usr/lib/python3.7', '/usr/lib/python3.7/lib-dynload', '/home/pi/.local/lib/python3.7/site-packages', '/usr/local/lib/python3.7/dist-packages', '/usr/lib/python3/dist-packages']
 
 
 
@@ -21,10 +21,18 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton
 
 import time
 
+from TFLite_detection_face import face_activate
+from Edge_Client_Interface import Edge_Client_Interface
+from speech_rec import voice_recognition
+
 class First_UI(QMainWindow):
     def __init__(self):
         super(First_UI, self).__init__()
         self.setupUi()
+
+        self.photo = None
+        self.id = "rpi1_000"
+        
     
     
     def setupUi(self):
@@ -80,13 +88,34 @@ class First_UI(QMainWindow):
         
         
         detect_person = True # face recognition here
+
+        #request,self.photo = face_activate()
+        request = "activate_system" # for debug
+        while request != "activate_system":
+            pass
+            #request,self.photo = face_activate()
+
+
+        request_name = self.photo
+        info = {"face": request_name}
+        Edge_Client_Interface.sendRequestToFog(template.format(self.id, "login", info))
+        message = Edge_Client_Interface.getReplyFromFog()
+
+        self.username = message["username"]#not sure
         
-        if not detect_person:
+        if  message["status"] == 1:
             from Edge_ui_11 import ui_1_1
-            self.s = ui_1_1()
+            self.s = ui_1_1()# register page
             self.s.show()
-        else:
-            #print("here")
+            
+        elif message["status"] == 0:
+            #print("login successfully")
+
+            f = open("id_info.txt","w")
+            for each in [self.photo,self.username]:
+                f.write(f"{each}\n")
+            f.close()
+                
             
             from Menu import ui_Menu
             self.s = ui_Menu()
