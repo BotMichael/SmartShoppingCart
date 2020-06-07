@@ -30,7 +30,8 @@ CREATE TABLE `shopping_history`(
 
 
 
-insert into user values ('9495278828', 'w');
+insert into user values ('9495278828', '123');
+insert into user values ('123', '123');
 
 insert into item values ('water', 'A', 0.97);
 insert into item values ('icecream', 'X', 4.9);
