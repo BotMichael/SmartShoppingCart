@@ -18,7 +18,7 @@ pubkey_file = "Data/public.pem"
 privkey_file = "Data/private.pem"
 
 
-mysqlHost = "35.184.209.132"                 
+mysqlHost = "35.184.209.132"
 mysqlUser = "ssc"                                                    
 mysqlPassword = "mypassword"
 mysqlPort = 3306 

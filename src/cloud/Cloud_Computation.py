@@ -7,7 +7,7 @@ import rsa
 from Cloud_DataParser import Cloud_DataParser
 from get_path import MarketMap
 from Error_code import *
-import face_recognition
+# import face_recognition
 
 from log.Logger import CloudLogger
 

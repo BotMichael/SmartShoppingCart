@@ -5,8 +5,8 @@ from logging import handlers
 
 _log_file_edge_dir = "src/edge/rpi2/"
 _log_file_error = "log/Error.log"
-_log_file_edge = _log_file_edge_dir + "log/Edge_?.log"
-_log_file_model = _log_file_edge_dir+ "log/Model_?.log"
+_log_file_edge = "log/Edge_?.log"
+_log_file_model = "log/Model_?.log"
 
 _level = logging.INFO
 _when = 'D'
@@ -35,12 +35,12 @@ class EdgeLogger:
     def __init__(self, device_id: str):
         self.logger, self.sh, self.th = _get_logger(_log_file_edge.replace("?", device_id))
         self.logger.removeHandler(self.sh)
-        self.error_logger, self.error_sh, self.error_th = _get_logger(_log_file_edge_dir + _log_file_error)
+        self.error_logger, self.error_sh, self.error_th = _get_logger( _log_file_error)
         self.error_logger.removeHandler(self.error_sh)
 
 
 class ModelLogger:
     def __init__(self, model_id: str):
         self.logger, self.sh, self.th = _get_logger(_log_file_model.replace("?", model_id))
-        self.error_logger, self.error_sh, self.error_th = _get_logger(_log_file_edge_dir + _log_file_error)
+        self.error_logger, self.error_sh, self.error_th = _get_logger( _log_file_error)
         self.error_logger.removeHandler(self.error_sh)

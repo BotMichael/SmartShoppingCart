@@ -5,7 +5,7 @@ from logging import handlers
 
 _log_file_cloud_dir = "src/cloud/"
 _log_file_error = "log/Error.log"
-_log_file_cloud = _log_file_cloud_dir + "log/Cloud.log"
+_log_file_cloud = "log/Cloud.log"
 
 _level = logging.INFO
 _when = 'D'
@@ -34,5 +34,5 @@ def _get_logger(filename: str):
 class CloudLogger:
     def __init__(self):
         self.logger, self.sh, self.th = _get_logger(_log_file_cloud)
-        self.error_logger, self.error_sh, self.error_th = _get_logger(_log_file_cloud_dir + _log_file_error)
+        self.error_logger, self.error_sh, self.error_th = _get_logger(_log_file_error)
         self.error_logger.removeHandler(self.error_sh)

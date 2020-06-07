@@ -3,10 +3,9 @@ import logging
 from logging import handlers
 
 
-_log_file_edge_dir = "src/edge/rpi1/"
+_log_file_fog_dir = "src/fog/"
 _log_file_error = "log/Error.log"
-_log_file_edge = "log/Edge_?.log"
-_log_file_model = "log/Model_?.log"
+_log_file_fog = "log/Fog.log"
 
 _level = logging.INFO
 _when = 'D'
@@ -32,16 +31,8 @@ def _get_logger(filename: str):
     return (logger, sh, th)
 
 
-class EdgeLogger:
-    def __init__(self, device_id: str):
-        self.logger, self.sh, self.th = _get_logger(_log_file_edge.replace("?", device_id))
-        self.logger.removeHandler(self.sh)
-        self.error_logger, self.error_sh, self.error_th = _get_logger(_log_file_error)
-        self.error_logger.removeHandler(self.error_sh)
-
-
-class ModelLogger:
-    def __init__(self, model_id: str):
-        self.logger, self.sh, self.th = _get_logger(_log_file_model.replace("?", model_id))
+class FogLogger:
+    def __init__(self):
+        self.logger, self.sh, self.th = _get_logger(_log_file_fog)
         self.error_logger, self.error_sh, self.error_th = _get_logger(_log_file_error)
         self.error_logger.removeHandler(self.error_sh)
