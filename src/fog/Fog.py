@@ -102,8 +102,8 @@ class Fog(threading.Thread):
                 frame, message_edge = self.getRequestFromEdge()
 
                 if message_edge["event"] == "quit":
-                    message_to_edge = template.format(0, "quit", {"msg": "Bye " + frame})
-                    self.sendReplyToEdge(frame, message_to_edge)
+                    # message_to_edge = template.format(0, "quit", {"msg": "Bye " + frame})
+                    # self.sendReplyToEdge(frame, message_to_edge)
                     self.frames[frame] = False
                     continue
 

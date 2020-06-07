@@ -3,7 +3,7 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton
 
-
+from Edge_Client_RP1 import Edge_Client_RP1
 
 import time
 
@@ -47,6 +47,11 @@ class BYE(QMainWindow):
 
     def slot_btn1_function(self):
         self.hide()
+
+        rpi1 = Edge_Client_RP1()
+        rpi1.quit()
+        rpi1.init_session()
+
         from Main import First_UI
         self.f = First_UI()
         self.f.show()

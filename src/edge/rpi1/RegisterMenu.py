@@ -18,16 +18,17 @@ from Main import First_UI
 import time
 
 
-class Edge_register(QMainWindow):
-    def __init__(self):
-        super(Edge_register, self).__init__()
+class RegisterMenu(QMainWindow):
+    def __init__(self, photo):
+        super(RegisterMenu, self).__init__()
+        self.photo = photo
         self.init_ui()
  
     def init_ui(self):
         self.centralwidget = QtWidgets.QWidget(self)
         self.centralwidget.setObjectName("centralwidget")
         self.resize(450, 600)
-        self.setWindowTitle('New User')
+        self.setWindowTitle('Fail to Recognize Face')
 
         self._banner = QtWidgets.QLabel(self)
         self._banner.setGeometry(70, 20, 301, 111)
@@ -38,23 +39,34 @@ class Edge_register(QMainWindow):
         self._banner.setObjectName("_banner")
         self._banner.show()
         _translate = QtCore.QCoreApplication.translate
-        self._banner.setText(_translate("MainWindow", "New User"))
-        
+        self._banner.setText(_translate("MainWindow", "Dear User"))
+
+        self.btn = QPushButton('Relogin', self)
+        self.btn.setGeometry(120, 150, 221, 100)
+        font = QtGui.QFont()
+        font.setFamily("Comic Sans MS")
+        font.setPointSize(36)
+        self.btn.setFont(font)
+        self.btn.clicked.connect(self.slot_btn0_function)
+
+
         self.btn = QPushButton('Register', self)
-        self.btn.setGeometry(120, 170, 221, 131)
+        self.btn.setGeometry(120, 275, 221, 100)
         font = QtGui.QFont()
         font.setFamily("Comic Sans MS")
         font.setPointSize(36)
         self.btn.setFont(font)
         self.btn.clicked.connect(self.slot_btn1_function)
 
+
         self.btn2 = QPushButton('Quit', self)
-        self.btn2.setGeometry(120, 350, 221, 131)
+        self.btn2.setGeometry(120, 400, 221, 100)
         font = QtGui.QFont()
         font.setFamily("Comic Sans MS")
         font.setPointSize(36)
         self.btn2.setFont(font)
         self.btn2.clicked.connect(self.slot_btn2_function)
+
 
         self.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(self)
@@ -66,9 +78,16 @@ class Edge_register(QMainWindow):
         #self.retranslateUi(self)
         QtCore.QMetaObject.connectSlotsByName(self)
 
+    def slot_btn0_function(self):
+        self.hide()
+        from Relogin import Relogin
+        self.f = Relogin(self)
+        self.f.show()
+
     def slot_btn1_function(self):
         self.hide()
-        self.f = First_UI()
+        from RegisterPage import Register_phone
+        self.f = Register_phone(self.photo)
         self.f.show()
  
     def slot_btn2_function(self):

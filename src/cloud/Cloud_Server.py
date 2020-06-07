@@ -46,15 +46,21 @@ class Cloud_Server:
         assert isinstance(msg, dict)
 
         if msg["event"] == "login":
-            face_encoding = msg["content"]["face"]
-            status, content = self.computation.recogFace(face_encoding)
-            return template.format("login", status, content)
-
+            if "face" in msg["content"]:
+                face_encoding = msg["content"]["face"]
+                status, content = self.computation.recogFace(face_encoding)
+                return template.format("login", status, content)
+            elif "userID" in msg["content"]:
+                userID = msg["content"]["userID"]
+                password = msg["content"]["password"]
+                status, content = self.computation.getLogin(userID, password)
+                return template.format("login", status, content)
         
         elif msg["event"] == "register":
+            face = msg["content"]["face"]
             userID = msg["content"]["userID"]
             password = msg["content"]["password"]
-            status, content = self.computation.register(userID, password)
+            status, content = self.computation.register(face, userID, password)
             return template.format("register", status, content)
 
 
