@@ -10,6 +10,9 @@ from collections import defaultdict
 import pymysql
 from log.Logger import CloudLogger
 
+import http.client
+import urllib.parse
+
 
 Position_file = "Data/Item_Region.txt"
 Face_file = "Data/face_encoding.txt"
@@ -119,6 +122,7 @@ class Cloud_DataParser:
         reply = self.cursor.execute( query.format(phone_num = phone, pw = password) )
         if reply == 1:  # If success
             self.conn.commit()
+            self._send_SMS(phone, "Dear customer, thank you for registering for Smart Shopping System!")
             return 0
         else:
             self._error_log.error("Fail to update the user table.")
@@ -174,6 +178,13 @@ class Cloud_DataParser:
         phone = hist[0]
         if phone != "customer" and not self.has_user(phone):
             return (1, "No such user in the system.")
+
+        total = 0
+        info = \
+"""
+        Receipt
+------------------------
+"""
         
         for t in hist[1:]:
             item = t[0].lower()
@@ -186,13 +197,20 @@ class Cloud_DataParser:
                 insert_query = query_without_phone.format(item_name = t[0].lower(), num = t[1])
             reply = self.cursor.execute( insert_query )
             if reply == 1:  # success
-                 self.conn.commit()
+                self.conn.commit()
+                c += a[i][0].capitalize() + " x " + str(a[i][1]) + "$\n"
+                total += a[i][1]
             else:
                 error_msg = "Fail to update user history: {phone_num}, {item_name}, {num}.".format(
                                 phone_num = phone, item_name = t[0], num = t[1])
                 self._error_log.error(error_msg)
                 return (1, error_msg)
                 
+        info += "------------------------\n"
+        info += "Total: " + str(total) + "\n"
+        info += "Thank you for shopping!"
+
+        self._send_SMS(phone, info)
         return (0, "")
             
             
@@ -215,6 +233,26 @@ class Cloud_DataParser:
             l = line.strip().split("|")
             result[l[0].strip().lower()] = l[1].strip()
         return result
+
+    
+    def _send_SMS(self, phone:str, info: str):
+        conn = http.client.HTTPSConnection("quick-easy-sms.p.rapidapi.com")
+
+        payload = "ipnUrl=https%3A%2F%2Fexample.com%2Fabcd&message={msg}&toNumber=1{phone_num}"
+        payload = payload.format(msg = urllib.parse.quote(info), phone_num = phone)
+
+        headers = {
+            'x-rapidapi-host': "quick-easy-sms.p.rapidapi.com",
+            'x-rapidapi-key': "e7f64de995msh101823f80343ff9p1faa63jsn9f5da543f481",
+            'content-type': "application/x-www-form-urlencoded"
+            }
+
+        conn.request("POST", "/send", payload, headers)
+
+        res = conn.getresponse()
+        data = res.read()
+
+        self._log.logger.info("SMS reply: " + data.decode("utf-8"))
     
 
     def __del__(self):
