@@ -3,14 +3,14 @@
 import zmq
 from Global_Var import CLOUD_PORT, CLOUD_PORT
 from Cloud_Computation import Cloud_Computation
-from log.Logger import CloudLogger, ErrorLogger
+from log.Logger import CloudLogger
 
 template = "{{ 'event':'{}', 'status':{}, 'content':{} }}"
 
 class Cloud_Server:
     def __init__(self):
         self._log = CloudLogger()
-        self._error_log = ErrorLogger()
+        self._error_log = self._log.error_logger
         self._log.logger.info("Cloud Server starts.")
 
         #####
@@ -33,7 +33,7 @@ class Cloud_Server:
             message = eval(message)
         except Exception as e:
             self._log.logger.error(" Error when eval(message)" + str(e))
-            self._error_log.logger.error(" Error when eval(message)" + str(e))
+            self._error_log.error(" Error when eval(message)" + str(e))
         return message
 
     
@@ -96,7 +96,7 @@ class Cloud_Server:
             except Exception as e:
                 self.sendReplyToFog('Bye')
                 self._log.logger.Error(str(e))
-                self._error_log.logger.Error(str(e))
+                self._error_log.Error(str(e))
                 break
 
 

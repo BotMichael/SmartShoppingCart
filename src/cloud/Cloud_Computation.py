@@ -4,29 +4,26 @@
 import os
 
 import rsa
-import Cloud_DataParser
+from Cloud_DataParser import Cloud_DataParser
 from get_path import MarketMap
 from Error_code import *
 import face_recognition
 
-from log.Logger import ErrorLogger, CloudLogger
+from log.Logger import CloudLogger
 
 
 
 class Cloud_Computation:
     def __init__(self):
-        temp = Cloud_DataParser.getDataDict()
-        self.pos_dict = temp[0]
-        self.price_dict = temp[1]
-        self.account_dict = temp[2]
-        self.MarketMap = MarketMap(self.pos_dict)
         self.pubkey, self.privkey = Cloud_DataParser.get_pub_private_key()
 
+        self.parser = Cloud_DataParser()
+        self.pos_dict = self.parser.get_pos_dict()
+        self.MarketMap = MarketMap(self.pos_dict)
+
         self._log = CloudLogger()
-        self._error_log = ErrorLogger()
+        self._error_log = self._log.error_logger
         self._log.logger.info(str(self.pos_dict))
-        self._log.logger.info(str(self.price_dict))
-        self._log.logger.info(str(self.account_dict))
         self._log.logger.info(str(self.MarketMap))
 
 
@@ -34,15 +31,14 @@ class Cloud_Computation:
     def getPubKey(self):
         return 0, {"pubkey": str(self.pubkey)}
 
+
     def register(self, userID, password):
-        if userID in self.account_dict:
+        if self.parser.has_user(userID):
             return ERR_001, {"msg": ERR_MSG[ERR_003]}
 
         pw = self._rsa_decrypt(eval(password))
-        i = Cloud_DataParser.updateAccount(userID, pw)
+        i = self.parser.update_user(userID, pw)
         if i == 0:
-            # update the account dict
-            self.account_dict = Cloud_DataParser.getDataDict()[2]
             return SUC_000, {"msg": ERR_MSG[SUC_000]}
         else:
             return ERR_001, {"msg": ERR_MSG[ERR_003]}
@@ -94,8 +90,9 @@ class Cloud_Computation:
 
         return SUC_000, {"userID": name}
 
+
     def _recog_face(self, face_encoding):
-        known_face_encodings, known_face_names = Cloud_DataParser.getFaceEncodings()
+        known_face_encodings, known_face_names = self.parser.getFaceEncodings()
         matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
 
         name = "Unknown"
@@ -115,22 +112,25 @@ class Cloud_Computation:
 
     def _log_in(self, userID, password):
         password = self._rsa_decrypt(eval(password))
-        self._log.logger.info("log in: " + str(self.account_dict))
-        return userID.lower() in self.account_dict and password == self.account_dict[userID]
+        self._log.logger.info("log in: " + userID)
+        return self.parser.is_user(userID, password)
+
 
     # TODO: estimate the items instead of taking the most recent one
     def _get_hist(self, userID):
-        items = Cloud_DataParser.getUserHistory(userID)
+        items = self.parser.get_user_history(userID)
         return items[-1] if items != [] else []
+
 
     def _calculate_price(self, items):
         price = 0
         detail = {}
         for i, n in items.items():
             i = i.lower()
-            if i in self.price_dict:
-                price += eval(self.price_dict[i])*int(n)
-                detail[i] = {"num": n, "price": self.price_dict[i]}
+            single_price = self.parser.get_item_info(i)
+            if single_price:
+                price += float(single_price) * int(n)
+                detail[i] = {"num": n, "price": single_price}
         return price, detail
 
 
@@ -141,11 +141,10 @@ class Cloud_Computation:
     def _store_shopping(self, userID, items):
         hist = [userID]
         for item in items:
-            hist.append(item)
-            hist.append(str(items[item]["num"]))
+            hist.append( (item, items[item]["num"]) )
         self._log.logger.info("hist: " + str(hist))
-        reply, err_msg = Cloud_DataParser.updateUserHistory(hist)
+        reply, err_msg = self.parser.update_user_history(hist)
         if(reply == 1):
-            self._error_log.logger.error("Fail to update shopping history: " + err_msg)
+            self._error_log.error("Fail to update shopping history: " + err_msg)
 
 

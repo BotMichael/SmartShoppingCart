@@ -4,7 +4,7 @@ import zmq
 import rsa
 
 import Global_Var
-from Logger import EdgeLogger, ErrorLogger
+from Logger import EdgeLogger
 
 
 template = '{{ "device": "{}", "event": "{}", "content" : {} }}'
@@ -14,7 +14,7 @@ class Edge_Client_Interface:
         self.id = device_ID
 
         self._log = EdgeLogger(self.id)
-        self._error_log = ErrorLogger()
+        self._error_log = self._log.error_logger
         self._log.logger.info("Edge client " + self.id + " starts. ")
 
         self.context = zmq.Context()
@@ -46,7 +46,7 @@ class Edge_Client_Interface:
             message = eval(message)
         except Exception as e:
             self._log.logger.error(self.id + " Error when eval(message)" + e)
-            self._error_log.logger.error(self.id + " Error when eval(message)" + e)
+            self._error_log.error(self.id + " Error when eval(message)" + e)
         return message
 
             

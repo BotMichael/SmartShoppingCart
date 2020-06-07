@@ -3,12 +3,9 @@ import logging
 from logging import handlers
 
 
-_log_file = "log/"
-_log_file_error = _log_file + "Error.log"
-_log_file_cloud = _log_file + "Cloud.log"
-_log_file_fog = _log_file + "Fog.log"
-_log_file_edge = _log_file + "Edge_?.log"
-_log_file_model = _log_file+ "Model_?.log"
+_log_file_cloud_dir = "src/cloud/"
+_log_file_error = "log/Error.log"
+_log_file_cloud = _log_file_cloud_dir + "log/Cloud.log"
 
 _level = logging.INFO
 _when = 'D'
@@ -34,28 +31,8 @@ def _get_logger(filename: str):
     return (logger, sh, th)
 
 
-class ErrorLogger:
-    def __init__(self):
-        self.logger, self.sh, self.th = _get_logger(_log_file_error)
-        self.logger.removeHandler(self.sh)
-
-
 class CloudLogger:
     def __init__(self):
         self.logger, self.sh, self.th = _get_logger(_log_file_cloud)
-
-
-class FogLogger:
-    def __init__(self):
-        self.logger, self.sh, self.th = _get_logger(_log_file_fog)
-
-
-class EdgeLogger:
-    def __init__(self, device_id: str):
-        self.logger, self.sh, self.th = _get_logger(_log_file_edge.replace("?", device_id))
-        self.logger.removeHandler(self.sh)
-
-
-class ModelLogger:
-    def __init__(self, model_id: str):
-        self.logger, self.sh, self.th = _get_logger(_log_file_model.replace("?", model_id))
+        self.error_logger, self.error_sh, self.error_th = _get_logger(_log_file_cloud_dir + _log_file_error)
+        self.error_logger.removeHandler(self.error_sh)

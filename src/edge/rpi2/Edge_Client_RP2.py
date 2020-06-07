@@ -25,7 +25,7 @@ class Edge_Client_RP2(Edge_Client_Interface):
                 print("Edge Client: Error occurs when talking to the Fog Server. Please restart the Edge Client.")
                 self.sendRequestToFog(template.format(self.id, "quit", e))
                 self._log.logger.error(str(e))
-                self._error_log.logger.error(str(e))
+                self._error_log.error(str(e))
                 break
 
 

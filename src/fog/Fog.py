@@ -2,7 +2,7 @@
 
 import zmq
 import Global_Var
-from log.Logger import FogLogger, ErrorLogger
+from log.Logger import FogLogger
 
 import tkinter as tk
 import threading
@@ -15,7 +15,7 @@ idle_color = 'dark slate gray'
 class Fog(threading.Thread):
     def __init__(self, tk_root):
         self._log = FogLogger()
-        self._error_log = ErrorLogger()
+        self._error_log = self._log.error_logger
         self._log.logger.info("Fog Server starts. Fog Client starts.")
         self.context = zmq.Context()
 
@@ -70,7 +70,7 @@ class Fog(threading.Thread):
             message_edge = eval(message_edge)
         except Exception as e:
             self._log.logger.error(" Error when eval(message_edge)" + str(e))
-            self._error_log.logger.error(" Error when eval(message_edge)" + str(e))
+            self._error_log.error(" Error when eval(message_edge)" + str(e))
         return frame, message_edge
 
 
@@ -81,7 +81,7 @@ class Fog(threading.Thread):
             message_cloud = eval(message_cloud)
         except Exception as e:
             self._log.logger.error(" Error when eval(message_cloud)" + str(e))
-            self._error_log.logger.error(" Error when eval(message_cloud)" + str(e))
+            self._error_log.error(" Error when eval(message_cloud)" + str(e))
         return message_cloud
 
 
@@ -144,7 +144,7 @@ class Fog(threading.Thread):
                 # for all frame connected, self.sendReplyToEdge(frame, "Bye")
                 self.disconnetAllFrame()
                 self._log.logger.Error(str(e))
-                self._error_log.logger.Error(str(e))
+                self._error_log.Error(str(e))
                 break
 
 

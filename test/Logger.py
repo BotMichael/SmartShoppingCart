@@ -2,16 +2,15 @@ import os
 import logging
 from logging import handlers
 
-_log_dir = "./log"
-if(not os.path.exists(_log_dir)):
-    os.mkdir(_log_dir)
 
-_log_file = "./log/" 
-_log_file_error = _log_file + "Error.log"
-_log_file_cloud = _log_file + "Cloud.log"
-_log_file_fog = _log_file + "Fog.log"
-_log_file_edge = _log_file + "Edge_?.log"
-_log_file_model = _log_file+ "Model_?.log"
+_log_file_cloud_dir = "test"
+_log_file_fog_dir = "test"
+_log_file_edge_dir = "test"
+_log_file_error = "log/Error.log"
+_log_file_cloud = _log_file_cloud_dir + "Cloud.log"
+_log_file_fog = _log_file_fog_dir + "Fog.log"
+_log_file_edge = _log_file_edge_dir + "Edge_?.log"
+_log_file_model = _log_file_edge_dir+ "Model_?.log"
 
 _level = logging.INFO
 _when = 'D'
@@ -37,28 +36,30 @@ def _get_logger(filename: str):
     return (logger, sh, th)
 
 
-class ErrorLogger:
-    def __init__(self):
-        self.logger, self.sh, self.th = _get_logger(_log_file_error)
-        self.logger.removeHandler(self.sh)
-
-
 class CloudLogger:
     def __init__(self):
         self.logger, self.sh, self.th = _get_logger(_log_file_cloud)
+        self.error_logger, self.error_sh, self.error_th = _get_logger(_log_file_cloud_dir + _log_file_error)
+        self.error_logger.removeHandler(self.error_sh)
 
 
 class FogLogger:
     def __init__(self):
         self.logger, self.sh, self.th = _get_logger(_log_file_fog)
+        self.error_logger, self.error_sh, self.error_th = _get_logger(_log_file_fog_dir + _log_file_error)
+        self.error_logger.removeHandler(self.error_sh)
 
 
 class EdgeLogger:
     def __init__(self, device_id: str):
         self.logger, self.sh, self.th = _get_logger(_log_file_edge.replace("?", device_id))
         self.logger.removeHandler(self.sh)
+        self.error_logger, self.error_sh, self.error_th = _get_logger(_log_file_edge_dir + _log_file_error)
+        self.error_logger.removeHandler(self.error_sh)
 
 
 class ModelLogger:
     def __init__(self, model_id: str):
         self.logger, self.sh, self.th = _get_logger(_log_file_model.replace("?", model_id))
+        self.error_logger, self.error_sh, self.error_th = _get_logger(_log_file_edge_dir + _log_file_error)
+        self.error_logger.removeHandler(self.error_sh)

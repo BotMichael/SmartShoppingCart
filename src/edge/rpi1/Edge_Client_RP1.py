@@ -245,7 +245,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
             except Exception as e:
                 print("Edge Client: An error occurs when talking to the Fog Server. Please restart the Edge Client.")
                 self._log.logger.error(str(e))
-                self._error_log.logger.error(str(e))
+                self._error_log.error(str(e))
             
             self.sendRequestToFog(template.format(self.id, "quit", 0))
             message = self.getReplyFromFog()
@@ -253,7 +253,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
             if message["content"]["msg"] != "Bye " + self.id:
                 print("This device might not quit properly.")
                 self._log.logger.error(self.id + " might not quit properly.")
-                self._error_log.logger.error(self.id + " might not quit properly.")
+                self._error_log.error(self.id + " might not quit properly.")
 
 
 
