@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!--<link href="jumbotron.css" rel="stylesheet">-->
+    <link rel="stylesheet" href="css/style.css" media="screen" type="text/css" />
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js" integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ=" crossorigin="anonymous"></script>
+
+</head>
+<body>
+
+
+<div class="charts--container">
+    <ul>
+        <li class="chart">
+            <h3 class="chart--subHeadline">Shopping Tendency</h3>
+            <h2 class="chart--headline">Pie Chart of Shopping Tendency</h2>
+            <div id="pieChart">
+                <svg id="pieChartSVG">
+                    <defs>
+                        <filter id='pieChartInsetShadow'>
+                            <feOffset dx='0' dy='0'/>
+                            <feGaussianBlur stdDeviation='3' result='offset-blur' />
+                            <feComposite operator='out' in='SourceGraphic' in2='offset-blur' result='inverse' />
+                            <feFlood flood-color='black' flood-opacity='1' result='color' />
+                            <feComposite operator='in' in='color' in2='inverse' result='shadow' />
+                            <feComposite operator='over' in='shadow' in2='SourceGraphic' />
+                        </filter>
+                        <filter id="pieChartDropShadow">
+                            <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blur" />
+                            <feOffset in="blur" dx="0" dy="3" result="offsetBlur" />
+                            <feMerge>
+                                <feMergeNode />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+                </svg>
+            </div>
+        </li>
+    </ul>
+</div>
+
+
+<div style="alignment: left; padding-right: 20px">
+    <ul class="nav navbar-nav navbar-left">
+        <a href="index.html" class="navbar-brand">
+            <div style="padding-left: 20px; font-size: 25px">
+                <svg class="bi bi-arrow-return-left" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" d="M5.854 5.646a.5.5 0 0 1 0 .708L3.207 9l2.647 2.646a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 0 1 .708 0z"/>
+                    <path fill-rule="evenodd" d="M13.5 2.5a.5.5 0 0 1 .5.5v4a2.5 2.5 0 0 1-2.5 2.5H3a.5.5 0 0 1 0-1h8.5A1.5 1.5 0 0 0 13 7V3a.5.5 0 0 1 .5-.5z"/>
+                </svg>
+                Back
+            </div>
+        </a>
+    </ul>
+</div>
+
+<script src="js/d3.v3.min.js"></script>
+<script src="shopping_tendency.js"></script>
+</body>
+
+
+</html>

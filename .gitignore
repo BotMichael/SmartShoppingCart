@@ -1,4 +1,5 @@
-
+src/cloud/ui/target
+src/cloud/ui/*.iml
 *.xml
 *.iml
 *.pyc
