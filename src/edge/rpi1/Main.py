@@ -25,10 +25,10 @@ from Edge_Client_RP1 import Edge_Client_RP1
 
 
 # debug face
-import face_recognition
-image = face_recognition.load_image_file('FileStorage/sample_image.jpg')
-with open('FileStorage/sample_image.txt', 'w') as f:
-    f.write(str(list(face_recognition.face_encodings(image)[0])))
+# import face_recognition
+# image = face_recognition.load_image_file('FileStorage/sample_image.jpg')
+# with open('FileStorage/sample_image.txt', 'w') as f:
+#     f.write(str(list(face_recognition.face_encodings(image)[0])))
 sample_photo = open('FileStorage/sample_image.txt').read()
 
 

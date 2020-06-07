@@ -87,7 +87,7 @@ class RegisterMenu(QMainWindow):
     def slot_btn1_function(self):
         self.hide()
         from RegisterPage import Register_phone
-        self.f = Register_phone(self.photo)
+        self.f = Register_phone(self.photo, self)
         self.f.show()
  
     def slot_btn2_function(self):

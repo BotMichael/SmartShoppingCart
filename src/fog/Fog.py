@@ -65,12 +65,14 @@ class Fog(threading.Thread):
         message = self.backend.recv_multipart()
         frame, message_edge = (message[0].decode("utf-8"), message[1].decode("utf-8"))
         self._log.logger.info("Received request from Edge " + frame + ": " + message_edge)
+
         self.frames[frame] = True
         try:
             message_edge = eval(message_edge)
         except Exception as e:
             self._log.logger.error(" Error when eval(message_edge)" + str(e))
             self._error_log.error(" Error when eval(message_edge)" + str(e))
+
         return frame, message_edge
 
 
@@ -85,12 +87,11 @@ class Fog(threading.Thread):
         return message_cloud
 
 
-    ## TODO: not work properly now
     def disconnetAllFrame(self):
         for f in self.frames:
             if self.frames[f]:
                 self.sendReplyToEdge(f, template.format(-1, "quit", {"msg": "Bye "+f} ))
-                self.frames[f] = False
+                del self.frames[f]
 
 
     def run(self):
@@ -130,7 +131,7 @@ class Fog(threading.Thread):
                     self.frames[frame] = False
                     continue
 
-                elif message_cloud["event"] == "checkout" and message_cloud["status"] == 0:
+                elif message_cloud["event"] in ("checkout", "pubkey") and message_cloud["status"] == 0:
                     self.frames[frame] = False
 
                 self.sendReplyToEdge(frame, message_cloud)
