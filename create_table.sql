@@ -21,11 +21,10 @@ CREATE TABLE `item`(
 CREATE TABLE `shopping_history`(
 		`historyID` integer NOT NULL auto_increment,
 		`time` timestamp NOT NULL DEFAULT now(),
-		`user_phone` varchar(255) NOT NULL,
+		`user_phone` varchar(255),
 		`item` varchar(255) NOT NULL,
 		`num` integer NOT NULL,
 	PRIMARY KEY (`historyID`),
-	FOREIGN KEY (`user_phone`) REFERENCES user(`phone`),
 	FOREIGN KEY (`item`) REFERENCES item(`item`)
 );
 

@@ -77,17 +77,19 @@ class Cloud_DataParser:
         return self._parser(Position_file)
     
 
+
     def has_user(self, phone: str):
         '''
         Check whether a user is in the database
         @return: bool
         '''
         query = "SELECT * FROM user where phone = '{phone_num}'"
-        if self.cursor:
-            self.cursor.execute( query.format(phone_num = phone) )
-            return len(self.cursor.fetchall()) != 0 # If len(results) == 0: no such user
-        else:
+        if not self.cursor:
             return False
+
+        self.cursor.execute( query.format(phone_num = phone) )
+        return len(self.cursor.fetchall()) != 0 # If len(results) == 0: no such user
+
 
 
     def is_user(self, phone: str, password: str) -> int:
@@ -95,11 +97,12 @@ class Cloud_DataParser:
         @return: bool: whether the user phone number and the password match the record in the database
         '''
         query = "SELECT * FROM user where phone = '{phone_num}' and password = '{pw}'"
-        if self.cursor:
-            self.cursor.execute( query.format(phone_num = phone, pw = password) )
-            return len(self.cursor.fetchall()) != 0 # If len(results) == 0: no such user
-        else:
+        if not self.cursor:
             return False
+
+        self.cursor.execute( query.format(phone_num = phone, pw = password) )
+        return len(self.cursor.fetchall()) != 0 # If len(results) == 0: no such user
+
 
 
     def update_user(self, phone: str, password: str) -> bool:
@@ -107,18 +110,18 @@ class Cloud_DataParser:
         @return: 0: success; 1: fail
         '''
         query = "INSERT INTO user values ('{phone_num}', '{pw}')"
-        if self.cursor:
-            if not self.has_user(phone):
-                reply = self.cursor.execute( query.format(phone_num = phone, pw = password) )
-                if reply == 1:  # If success
-                    self.conn.commit()
-                    return 0
-                else:
-                    self._error_log.error("Fail to update the user table.")
-                    return 1
-            else:
-                return 1
+        if not self.cursor:
+            return 1
+
+        if self.has_user(phone):
+            return 1
+
+        reply = self.cursor.execute( query.format(phone_num = phone, pw = password) )
+        if reply == 1:  # If success
+            self.conn.commit()
+            return 0
         else:
+            self._error_log.error("Fail to update the user table.")
             return 1
 
 
@@ -128,16 +131,17 @@ class Cloud_DataParser:
         @return: if success -> price: float; if fail -> None
         """
         query = "SELECT price FROM item where item = '{item_name}'"
-        if self.cursor:
-            self.cursor.execute( query.format(item_name = item) )
-            result = self.cursor.fetchall()
-            if len(result) >= 1:  # If success
-                return result[0][0]
-            else:
-                self._error_log.error("Fail to get the price of {item_name}.".format(item_name = item))
-                return None
-        else:
+        if not self.cursor:
             return None
+
+        self.cursor.execute( query.format(item_name = item) )
+        result = self.cursor.fetchall()
+        if len(result) >= 1:  # If success
+            return result[0][0]
+        else:
+            self._error_log.error("Fail to get the price of {item_name}.".format(item_name = item))
+            return None
+
 
 
     def get_user_history(self, phone: str):
@@ -145,45 +149,52 @@ class Cloud_DataParser:
         @return: {date: [(item, price, num)]}
         '''
         query = "SELECT * FROM shopping_history where user_phone = '{phone_num}'"
-        if self.cursor:
-            self.cursor.execute( query.format(phone_num = phone) )
-            records = self.cursor.fetchall()
-            if len(records) >= 1:  # If has shopping history
-                result = defaultdict(lambda : [])
-                for target in records:
-                    t = target[1].strftime("%Y-%m-%d %H:%M:%S")
-                    result[t].append((target[3], self.get_item_info(target[3]), target[4]))
-                return result
-            else:
-                return []
-        else:
+        if not self.cursor:
             return []
+
+        self.cursor.execute( query.format(phone_num = phone) )
+        records = self.cursor.fetchall()
+        if len(records) <= 0:  # If doesn't have shopping history
+            return []
+
+        result = defaultdict(lambda : [])
+        for target in records:
+            t = target[1].strftime("%Y-%m-%d %H:%M:%S")
+            result[t].append((target[3], self.get_item_info(target[3]), target[4]))
+        return result
+
 
 
     def update_user_history(self, hist: ["phone", ("item", "num")]):
-        query = "INSERT INTO shopping_history (`user_phone`, `item`, `num`) VALUES ('{phone_num}', '{item_name}', {num})"
-        if self.cursor:
-            phone = hist[0]
-            if self.has_user(phone):
-                for t in hist[1:]:
-                    item = t[0].lower()
-                    if self.get_item_info(item):
-                        insert_query = query.format(phone_num = phone, item_name = t[0].lower(), num = t[1])
-                        reply = self.cursor.execute( insert_query )
-                        if reply != 1:  # fail
-                            error_msg = "Fail to update user history: {phone_num}, {item_name}, {num}.".format(
-                                            phone_num = phone, item_name = t[0], num = t[1])
-                            self._error_log.error(error_msg)
-                            return (1, error_msg)
-                        else:
-                            self.conn.commit()
-                    else:
-                        return (1, "{item_name}: No such item in the repository.".format(item_name = item))
-                return (0, "")
-            else:
-                return (1, "No such user in the system.")
-        else:
+        query_with_phone = "INSERT INTO shopping_history (`user_phone`, `item`, `num`) VALUES ('{phone_num}', '{item_name}', {num})"
+        query_without_phone = "INSERT INTO shopping_history (`item`, `num`) VALUES ('{item_name}', {num})"
+        if not self.cursor:
             return (1, "No connection to the backend database.")
+
+        phone = hist[0]
+        if phone != "customer" and not self.has_user(phone):
+            return (1, "No such user in the system.")
+        
+        for t in hist[1:]:
+            item = t[0].lower()
+            if not self.get_item_info(item):
+                return (1, "{item_name}: No such item in the repository.".format(item_name = item))
+
+            if phone != "customer":
+                insert_query = query_with_phone.format(phone_num = phone, item_name = t[0].lower(), num = t[1])
+            else:
+                insert_query = query_without_phone.format(item_name = t[0].lower(), num = t[1])
+            reply = self.cursor.execute( insert_query )
+            if reply == 1:  # success
+                 self.conn.commit()
+            else:
+                error_msg = "Fail to update user history: {phone_num}, {item_name}, {num}.".format(
+                                phone_num = phone, item_name = t[0], num = t[1])
+                self._error_log.error(error_msg)
+                return (1, error_msg)
+                
+        return (0, "")
+            
             
 
     def getFaceEncodings(self):
@@ -216,9 +227,10 @@ class Cloud_DataParser:
 if __name__ == "__main__":
     # test
     t = Cloud_DataParser()
-    print(t.has_user("9495278828"), t.has_user("123456"))
-    print(t.is_user("9495278828", "w"), t.is_user("9495278828", "a"), t.is_user("123", "w"))
-    print(t.update_user("123456", "a"), t.update_user("123456789", "helloworld"))
-    print(t.get_item_info("world"))
-    print(t.update_user_history(["9495278828", ("icecream", 4), ("bottle", 3)]))
-    print(t.get_user_history("9495278828"))
+    # print(t.has_user("9495278828"), t.has_user("123456"))
+    # print(t.is_user("9495278828", "w"), t.is_user("9495278828", "a"), t.is_user("123", "w"))
+    # print(t.update_user("123456", "a"), t.update_user("123456789", "helloworld"))
+    # print(t.get_item_info("world"))
+    # print(t.update_user_history(["9495278828", ("icecream", 4), ("bottle", 3)]))
+    # print(t.update_user_history(["customer", ("icecream", 4), ("bottle", 3)]))
+    # print(t.get_user_history("9495278828"))
