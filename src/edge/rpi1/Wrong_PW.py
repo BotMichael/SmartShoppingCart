@@ -15,9 +15,10 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton
 import sys
 
 class ui_WrongPW(QMainWindow):
-    def __init__(self):
+    def __init__(self, parent = None):
         super(ui_WrongPW, self).__init__()
         self.init_ui()
+        self.parent = parent
         
     def init_ui(self):
         MainWindow = self
@@ -61,15 +62,24 @@ class ui_WrongPW(QMainWindow):
 
     def slot_btn_Checkout_function(self):
         self.hide()
-        from CheckOut import ui_Checkout
-        self.f = ui_Checkout()
-        self.f.show()
+
+        if self.parent != None:
+            self.f = self.parent
+            self.f.show()
+        else:
+            from CheckOut import ui_Checkout
+            self.f = ui_Checkout()
+            self.f.show()
 
     def slot_btn_Return_function(self):
         self.hide()
-        from Menu import ui_Menu
-        self.f = ui_Menu()
-        self.f.show()
+        if self.parent != None:
+            self.f = self.parent
+            self.f.show()
+        else:
+            from Menu import ui_Menu
+            self.f = ui_Menu()
+            self.f.show()
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate

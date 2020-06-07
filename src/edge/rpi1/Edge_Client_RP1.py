@@ -72,6 +72,18 @@ class Edge_Client_RP1(Edge_Client_Interface):
 
         return message
 
+    def login_with_password(self, userID, password) -> "message_dict":
+        info = {"userID": userID, "password": str(self.rsa_encrypt(password))}
+        self.sendRequestToFog(template.format(self.id, "login", info))
+        message = self.getReplyFromFog()
+        # if success
+        if message["status"] == 0:
+            self.LOGIN = True
+            self.user = message["content"]["userID"]
+            self._update_session()
+
+        return message
+
 
     def scan(self) -> "message_dict":
 
@@ -104,15 +116,15 @@ class Edge_Client_RP1(Edge_Client_Interface):
 
     def register(self, photo, userID, pw) -> ("register_status", "message_dict / str"):
 
-        info = {"request_face": photo, "userID": userID, "password": pw}
+        info = {"face": photo, "userID": userID, "password": str(self.rsa_encrypt(pw))}
 
         self.sendRequestToFog(template.format(self.id, "register", info))
         message = self.getReplyFromFog()
         if message["status"] == 0:
             self.LOGIN = True
             self.user = userID
-
-        # else, just not login and user = "customer"
+            self._update_session()
+        # else, just not login and user = "customer"; may implement that if want to reg when checkout
         else:
             self.user = "customer"
         return message
@@ -191,9 +203,6 @@ class Edge_Client_RP1(Edge_Client_Interface):
     #         self.total_price = 0
     #         self.user = "customer"
     #
-    #         while not self.ACTIVATE:
-    #             self._activation()
-    #
     #         self._login() # will update self.LOGIN, self.user
     #
     #
@@ -236,7 +245,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
     #             self._error_log.error(self.id + " might not quit properly.")
 
 
-
-if __name__ == "__main__":
-    e = Edge_Client_RP1()
+#
+# if __name__ == "__main__":
+#     e = Edge_Client_RP1()
     # e.run()

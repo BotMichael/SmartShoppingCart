@@ -33,10 +33,11 @@ class Cloud_Computation:
         return 0, {"pubkey": str(self.pubkey)}
 
 
-    def register(self, userID, password):
+    def register(self, photo, userID, password):
         if self.parser.has_user(userID):
             return ERR_001, {"msg": ERR_MSG[ERR_003]}
 
+        # TODO: save photo
         pw = self._rsa_decrypt(eval(password))
         i = self.parser.update_user(userID, pw)
         if i == 0:
@@ -93,6 +94,14 @@ class Cloud_Computation:
             return ERR_001, {"msg": ERR_MSG[ERR_001]}
 
         return SUC_000, {"userID": name}
+
+    def getLogin(self, userID, password):
+        status = self._log_in(userID, password)
+
+        if not status:
+            return ERR_001, {"msg": ERR_MSG[ERR_001]}
+
+        return SUC_000, {"userID": userID}
 
 
     def _recog_face(self, face_encoding):
