@@ -207,4 +207,4 @@ class Edge_Client_RP1(Edge_Client_Interface):
 
 if __name__ == "__main__":
     e = Edge_Client_RP1()
-    e.run()
+    # e.run()
