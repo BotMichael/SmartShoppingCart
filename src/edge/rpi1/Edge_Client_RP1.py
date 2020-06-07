@@ -135,6 +135,8 @@ class Edge_Client_RP1(Edge_Client_Interface):
         message = self.getReplyFromFog()
         return message
 
+    def quit(self):
+        self.sendRequestToFog(template.format(self.id, "quit", 0))
 
     # def _activation(self)-> "status: int":
     #     while not self.ACTIVATE:
