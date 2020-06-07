@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '1.ui'
+# Form implementation generated from reading rpi1 file '1.rpi1'
 #
 # Created by: PyQt5 UI code generator 5.15.0
 #
@@ -14,48 +14,48 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton
 
 import sys
 
-
-class ui_Top_Sale(QMainWindow):
+class ui_Pay(QMainWindow):
     def __init__(self):
-        super(ui_Top_Sale, self).__init__()
+        super(ui_Pay, self).__init__()
         self.init_ui()
         
     def init_ui(self):
         MainWindow = self
-        
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(450, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.Welcome_banner = QtWidgets.QLabel(self.centralwidget)
-        self.Welcome_banner.setGeometry(QtCore.QRect(60, 10, 341, 91))
+        self.Welcome_banner.setGeometry(QtCore.QRect(110, 10, 251, 91))
         font = QtGui.QFont()
         font.setFamily("Comic Sans MS")
-        font.setPointSize(60)
+        font.setPointSize(40)
         self.Welcome_banner.setFont(font)
         self.Welcome_banner.setObjectName("Welcome_banner")
+        
         self.RETURN = QtWidgets.QPushButton(self.centralwidget)
-        self.RETURN.setGeometry(QtCore.QRect(140, 510, 181, 61))
+        self.RETURN.setGeometry(QtCore.QRect(20, 500, 180, 60))
         font = QtGui.QFont()
         font.setFamily("Comic Sans MS")
         font.setPointSize(36)
         self.RETURN.setFont(font)
         self.RETURN.setObjectName("RETURN")
-        self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
-        self.scrollArea.setGeometry(QtCore.QRect(20, 120, 421, 381))
-        self.scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        self.scrollArea.setWidgetResizable(False)
-        self.scrollArea.setObjectName("scrollArea")
-        self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 400, 1000))
-        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
-        self.label = QtWidgets.QLabel(self.scrollAreaWidgetContents)
-        self.label.setGeometry(QtCore.QRect(-10, -30, 400, 1000))
-        self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("./top_sale.jpg"))
-        self.label.setScaledContents(True)
-        self.label.setObjectName("label")
-        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
+
+        self.DONE = QtWidgets.QPushButton(self.centralwidget)
+        self.DONE.setGeometry(QtCore.QRect(220, 500, 180, 60))
+        font = QtGui.QFont()
+        font.setFamily("Comic Sans MS")
+        font.setPointSize(36)
+        self.DONE.setFont(font)
+        self.DONE.setObjectName("DONE")
+        
+        self.QR_code = QtWidgets.QLabel(self.centralwidget)
+        self.QR_code.setGeometry(QtCore.QRect(80, 130, 281, 291))
+        font = QtGui.QFont()
+        font.setFamily("Comic Sans MS")
+        font.setPointSize(20)
+        self.QR_code.setFont(font)
+        self.QR_code.setObjectName("QR_code")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -65,6 +65,20 @@ class ui_Top_Sale(QMainWindow):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
         
         self.RETURN.clicked.connect(self.slot_btn_Return_function)
+        self.DONE.clicked.connect(self.slot_btn_DONE_function)
+
+
+    def slot_btn_DONE_function(self):
+        received = True
+        if received:
+            self.hide()
+            from Main import First_UI
+            self.f = First_UI()
+            self.f.show()
+        else:
+            self.DONE.setText(_translate("MainWindow", "DENIED"))
+            
+
 
     def slot_btn_Return_function(self):
         self.hide()
@@ -72,8 +86,11 @@ class ui_Top_Sale(QMainWindow):
         self.f = ui_Menu()
         self.f.show()
 
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.Welcome_banner.setText(_translate("MainWindow", "Top Sale"))
+        self.Welcome_banner.setText(_translate("MainWindow", "Payment"))
         self.RETURN.setText(_translate("MainWindow", "Return"))
+        self.DONE.setText(_translate("MainWindow", "DONE"))
+        self.QR_code.setText(_translate("MainWindow", "QR CODE"))

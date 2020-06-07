@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '1.ui'
+# Form implementation generated from reading rpi1 file '1.rpi1'
 #
 # Created by: PyQt5 UI code generator 5.15.0
 #
@@ -14,40 +14,48 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton
 
 import sys
 
-class ui_WrongPW(QMainWindow):
+
+class ui_Top_Sale(QMainWindow):
     def __init__(self):
-        super(ui_WrongPW, self).__init__()
+        super(ui_Top_Sale, self).__init__()
         self.init_ui()
         
     def init_ui(self):
         MainWindow = self
+        
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(450, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.Welcome_banner = QtWidgets.QLabel(self.centralwidget)
-        self.Welcome_banner.setGeometry(QtCore.QRect(20, 70, 421, 81))
+        self.Welcome_banner.setGeometry(QtCore.QRect(60, 10, 341, 91))
         font = QtGui.QFont()
         font.setFamily("Comic Sans MS")
-        font.setPointSize(40)
+        font.setPointSize(60)
         self.Welcome_banner.setFont(font)
         self.Welcome_banner.setObjectName("Welcome_banner")
         self.RETURN = QtWidgets.QPushButton(self.centralwidget)
-        self.RETURN.setGeometry(QtCore.QRect(130, 500, 181, 61))
+        self.RETURN.setGeometry(QtCore.QRect(140, 510, 181, 61))
         font = QtGui.QFont()
         font.setFamily("Comic Sans MS")
         font.setPointSize(36)
         self.RETURN.setFont(font)
         self.RETURN.setObjectName("RETURN")
-        
-        self.CHECKOUT = QtWidgets.QPushButton(self.centralwidget)
-        self.CHECKOUT.setGeometry(QtCore.QRect(70, 270, 301, 111))
-        font = QtGui.QFont()
-        font.setFamily("Comic Sans MS")
-        font.setPointSize(36)
-        self.CHECKOUT.setFont(font)
-        self.CHECKOUT.setObjectName("TryAgain")
-        
+        self.scrollArea = QtWidgets.QScrollArea(self.centralwidget)
+        self.scrollArea.setGeometry(QtCore.QRect(20, 120, 421, 381))
+        self.scrollArea.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.scrollArea.setWidgetResizable(False)
+        self.scrollArea.setObjectName("scrollArea")
+        self.scrollAreaWidgetContents = QtWidgets.QWidget()
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 400, 1000))
+        self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+        self.label = QtWidgets.QLabel(self.scrollAreaWidgetContents)
+        self.label.setGeometry(QtCore.QRect(-10, -30, 400, 1000))
+        self.label.setText("")
+        self.label.setPixmap(QtGui.QPixmap("./top_sale.jpg"))
+        self.label.setScaledContents(True)
+        self.label.setObjectName("label")
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -55,15 +63,8 @@ class ui_WrongPW(QMainWindow):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+        
         self.RETURN.clicked.connect(self.slot_btn_Return_function)
-
-        self.CHECKOUT.clicked.connect(self.slot_btn_Checkout_function)
-
-    def slot_btn_Checkout_function(self):
-        self.hide()
-        from CheckOut import ui_Checkout
-        self.f = ui_Checkout()
-        self.f.show()
 
     def slot_btn_Return_function(self):
         self.hide()
@@ -73,7 +74,6 @@ class ui_WrongPW(QMainWindow):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "WrongPassword"))
-        self.Welcome_banner.setText(_translate("MainWindow", "Wrong Password"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.Welcome_banner.setText(_translate("MainWindow", "Top Sale"))
         self.RETURN.setText(_translate("MainWindow", "Return"))
-        self.CHECKOUT.setText(_translate("MainWindow", "Try Again"))

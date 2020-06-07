@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'main.ui'
+# Form implementation generated from reading rpi1 file 'main.rpi1'
 #
 # Created by: PyQt5 UI code generator 5.15.0
 #
@@ -13,15 +13,12 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton
 
 import sys
-from Edge_Client_Interface import Edge_Client_Interface
 
 
 class ui_Menu(QMainWindow):
     def __init__(self):
         super(ui_Menu, self).__init__()
         self.init_ui()
-        self.cart = {}
-        self.total_price = 0
         
     def init_ui(self):
         self.setObjectName("MainWindow")
@@ -89,14 +86,19 @@ class ui_Menu(QMainWindow):
         
     def slot_btn_MAP_function(self):
         self.hide()
-        from Map import ui_Map
-        self.f = ui_Map()
-        self.f.show()
-        
+        from Main import First_UI
+        self.f = First_UI()
+        self.f.show()    
     def slot_btn_FIND_ITEM_function(self):
         self.hide()
-        from FIND import ui_Find_Item
-        self.f = ui_Find_Item()
+        from Main import First_UI
+        self.f = First_UI()
+        self.f.show()
+    
+    def slot_btn_CART_function(self):
+        self.hide()
+        from Main import First_UI
+        self.f = First_UI()
         self.f.show()
 
     def retranslateUi(self, MainWindow):
@@ -107,40 +109,3 @@ class ui_Menu(QMainWindow):
         self.MAP.setText(_translate("MainWindow", "MAP"))
         self.FIND_ITEM.setText(_translate("MainWindow", "FIND ITEM"))
         self.CART.setText(_translate("MainWindow", "CART"))
-
-    def slot_btn_CART_function(self):
-        self.hide()
-
-        self._scan()
-
-
-
-
-
-        
-        from MyCart import ui_Cart
-        self.f = ui_Cart()
-        self.f.show()
-
-    def _scan(self) -> "message_dict":
-        Edge_Client_Interface.sendRequestToFog(template.format(self.id, "activate", {"device": "rpi2_000"}))
-        #  Get the reply.
-        f = open("receipt.txt","w")
-        
-        message = Edge_Client_Interface.getReplyFromFog()
-        if message["status"] == 0:
-            print("Success.")
-            self.cart = message["content"]["item"]
-            self.total_price = message["content"]["price"]
-
-            f.write(f"Total Price: {self.total_price}\n")
-            for key in self.cart:
-                if key != "price":
-                    num   = self.cart[key]["num"]
-                    price = self.cart[key]["price"]
-                    f.write(f"{key}: {num} x ${price}")
-        else:
-            print("Error:", message["content"]["msg"])
-        f.close()
-        return message
-

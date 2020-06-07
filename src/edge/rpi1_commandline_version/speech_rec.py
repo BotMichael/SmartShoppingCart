@@ -14,7 +14,7 @@ def voice_recognition():
             audio = r.listen(source)
 
         # recognize speech using Sphinx
-        item = r.recognize_sphinx(audio))
+        item = r.recognize_sphinx(audio)
         
     return item
     

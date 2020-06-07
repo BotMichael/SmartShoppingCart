@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '1.ui'
+# Form implementation generated from reading rpi1 file '1.rpi1'
 #
 # Created by: PyQt5 UI code generator 5.15.0
 #
@@ -43,7 +43,7 @@ class ui_RegionA(QMainWindow):
         self.IMAGE = QtWidgets.QLabel(self.centralwidget)
         self.IMAGE.setGeometry(QtCore.QRect(50, 140, 350, 350))
         self.IMAGE.setText("")
-        self.IMAGE.setPixmap(QtGui.QPixmap("./RegionA.jpg"))
+        self.IMAGE.setPixmap(QtGui.QPixmap("src/edge/rpi1/FileStorage/RegionA.jpg"))
         self.IMAGE.setScaledContents(True)
         self.IMAGE.setObjectName("IMAGE")
 

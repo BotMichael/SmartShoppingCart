@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '1.ui'
+# Form implementation generated from reading rpi1 file '1.rpi1'
 #
 # Created by: PyQt5 UI code generator 5.15.0
 #
@@ -14,9 +14,9 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton
 
 import sys
 
-class ui_Pay(QMainWindow):
+class ui_WrongPW(QMainWindow):
     def __init__(self):
-        super(ui_Pay, self).__init__()
+        super(ui_WrongPW, self).__init__()
         self.init_ui()
         
     def init_ui(self):
@@ -26,36 +26,28 @@ class ui_Pay(QMainWindow):
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.Welcome_banner = QtWidgets.QLabel(self.centralwidget)
-        self.Welcome_banner.setGeometry(QtCore.QRect(110, 10, 251, 91))
+        self.Welcome_banner.setGeometry(QtCore.QRect(20, 70, 421, 81))
         font = QtGui.QFont()
         font.setFamily("Comic Sans MS")
         font.setPointSize(40)
         self.Welcome_banner.setFont(font)
         self.Welcome_banner.setObjectName("Welcome_banner")
-        
         self.RETURN = QtWidgets.QPushButton(self.centralwidget)
-        self.RETURN.setGeometry(QtCore.QRect(20, 500, 180, 60))
+        self.RETURN.setGeometry(QtCore.QRect(130, 500, 181, 61))
         font = QtGui.QFont()
         font.setFamily("Comic Sans MS")
         font.setPointSize(36)
         self.RETURN.setFont(font)
         self.RETURN.setObjectName("RETURN")
-
-        self.DONE = QtWidgets.QPushButton(self.centralwidget)
-        self.DONE.setGeometry(QtCore.QRect(220, 500, 180, 60))
+        
+        self.CHECKOUT = QtWidgets.QPushButton(self.centralwidget)
+        self.CHECKOUT.setGeometry(QtCore.QRect(70, 270, 301, 111))
         font = QtGui.QFont()
         font.setFamily("Comic Sans MS")
         font.setPointSize(36)
-        self.DONE.setFont(font)
-        self.DONE.setObjectName("DONE")
+        self.CHECKOUT.setFont(font)
+        self.CHECKOUT.setObjectName("TryAgain")
         
-        self.QR_code = QtWidgets.QLabel(self.centralwidget)
-        self.QR_code.setGeometry(QtCore.QRect(80, 130, 281, 291))
-        font = QtGui.QFont()
-        font.setFamily("Comic Sans MS")
-        font.setPointSize(20)
-        self.QR_code.setFont(font)
-        self.QR_code.setObjectName("QR_code")
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
@@ -63,22 +55,15 @@ class ui_Pay(QMainWindow):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-        
         self.RETURN.clicked.connect(self.slot_btn_Return_function)
-        self.DONE.clicked.connect(self.slot_btn_DONE_function)
 
+        self.CHECKOUT.clicked.connect(self.slot_btn_Checkout_function)
 
-    def slot_btn_DONE_function(self):
-        received = True
-        if received:
-            self.hide()
-            from Main import First_UI
-            self.f = First_UI()
-            self.f.show()
-        else:
-            self.DONE.setText(_translate("MainWindow", "DENIED"))
-            
-
+    def slot_btn_Checkout_function(self):
+        self.hide()
+        from CheckOut import ui_Checkout
+        self.f = ui_Checkout()
+        self.f.show()
 
     def slot_btn_Return_function(self):
         self.hide()
@@ -86,11 +71,9 @@ class ui_Pay(QMainWindow):
         self.f = ui_Menu()
         self.f.show()
 
-
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.Welcome_banner.setText(_translate("MainWindow", "Payment"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "WrongPassword"))
+        self.Welcome_banner.setText(_translate("MainWindow", "Wrong Password"))
         self.RETURN.setText(_translate("MainWindow", "Return"))
-        self.DONE.setText(_translate("MainWindow", "DONE"))
-        self.QR_code.setText(_translate("MainWindow", "QR CODE"))
+        self.CHECKOUT.setText(_translate("MainWindow", "Try Again"))

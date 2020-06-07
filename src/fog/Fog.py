@@ -111,7 +111,7 @@ class Fog(threading.Thread):
                     continue
 
                 if message_edge["event"].lower() == "activate":
-                    # send from rpi1, need to activate rpi2
+                    # send from rpi1_commandline_version, need to activate rpi2
                     frame2 = message_edge["content"]["device"]
                     self.frame_pair[frame2] = frame
                     self.sendReplyToEdge(frame2, str({"event": "activate", "content": {"msg": "activate"}}))

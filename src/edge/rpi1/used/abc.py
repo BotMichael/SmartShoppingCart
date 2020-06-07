@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '1.ui'
+# Form implementation generated from reading rpi1 file '1.rpi1'
 #
 # Created by: PyQt5 UI code generator 5.15.0
 #
@@ -27,7 +27,7 @@ class Ui_MainWindow(object):
         self.Discount = QtWidgets.QLabel(self.centralwidget)
         self.Discount.setGeometry(QtCore.QRect(30, 160, 400, 400))
         self.Discount.setText("")
-        self.Discount.setPixmap(QtGui.QPixmap("ui/dis.jpg"))
+        self.Discount.setPixmap(QtGui.QPixmap("rpi1/dis.jpg"))
         self.Discount.setScaledContents(True)
         self.Discount.setObjectName("Discount")
         MainWindow.setCentralWidget(self.centralwidget)

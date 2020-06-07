@@ -9,47 +9,40 @@ from Edge_Client_Interface import Edge_Client_Interface
 # from speech_rec import voice_recognition
 
 import time
-import json
-
 template = '{{ "device": "{}", "event": "{}", "content" : {} }}'
 valid_request = {"find path", "checkout", "quit", "price"}
 
+
+# debug face
+import face_recognition
+image = face_recognition.load_image_file('sample_image.jpg')
+sampe_photo = str(list(face_recognition.face_encodings(image)[0]))
+
+
 class Edge_Client_RP1(Edge_Client_Interface):
-    def __init__(self, session_file='session.json'):
+    def __init__(self):
         Edge_Client_Interface.__init__(self, "rpi1_000")
         self.ACTIVATE = False
         self.LOGIN = False
         self.user = "customer"
         self.cart = {}
         self.total_price = 0
-        self.photo = None
+        self.photo = sampe_photo
         self.pw = None
-        self.session_file = session_file
-        self._update_session()
-        # self.__dict__ = json.load(session_file)
 
 
-    def _update_session(self):
-        data = self.__dict__
-        with open(self.session_file, 'w', encoding='utf-8') as f:
-            json.dump(data, f, ensure_ascii=False)
+    def _getUserInput(self, subject: str, extra = "") -> str:
+        # result = voice_recognition()
+        # while(result == ""):
+        #     result = voice_recognition()
+        # return result
+        result = str(input("Please type your " + subject + " " + extra + ": "))
+        while(result == ""):
+            result = str(input(subject + " can't be empty. Please retype your " + subject + ": "))
+        return result
 
 
-    def sendLoginMessage(self, photo) -> "status: int":
-        info = {"face": photo}
-        self.sendRequestToFog(template.format(self.id, "login", info))
-        message = self.getReplyFromFog()
-
-        # if success
-        if message["status"] == 0:
-            self.LOGIN = True
-            self.user = message["content"]["userID"]
-            self._update_session()
-
-        return message
-
-
-    def sendRegresterMessage(self) -> ("register_status", "message_dict / str"):
+    def _register(self) -> ("register_status", "message_dict / str"):
         '''
         @return:
             @register_status: 0 - success
@@ -76,6 +69,65 @@ class Edge_Client_RP1(Edge_Client_Interface):
         # else, just not login and user = "customer"
         else:
             self.user = "customer"
+
+    #         print("Register successfully. Please re-login.")
+    #         return (0, message)
+        # print("Do you want to register or relogin?")
+        # reply = str(input("(Y - Yes / N - No / R - Relogin) "))
+        # reply = reply.upper()
+        # while(reply not in ("N", "Y", "R")):
+        #     print("Invalid reply. Please type again. Do you want to register or relogin?" )
+        #     reply = str(input("(Y - Yes / N - No / R - Relogin) "))
+        #     reply = reply.upper()
+        #
+        # if (reply == "N"):
+        #     print("Bye.")
+        #     self.sendRequestToFog(template.format(self.id, "quit", 0))
+        #     message = self.getReplyFromFog()
+        #     return (2, message)
+        # elif (reply == "Y"):
+        #     # Register
+        #     #request_name = self._getUserInput("username")
+        #     request_name = self.photo
+        #     request_pw = self._getUserInput("password")
+        #     self.pw=str(self.rsa_encrypt(request_pw))
+        #     info = {"userID": request_name, "password": self.pw}
+        #     self.sendRequestToFog(template.format(self.id, "register", info))
+        #     message = self.getReplyFromFog()
+        #     if message["status"] == 0:
+        #         print("Register successfully. Please re-login.")
+        #         self.REGISTER = True
+        #         return (0, message)
+        #     else:
+        #         return (1, message)
+        # elif (reply == "R"):
+        #     return (3, None)
+
+
+    def _login(self) -> "status: int":
+        '''
+        @return
+            @status: 0 - success
+                     1 - fail
+                     2 - quit
+        '''
+
+        #request_name = self._getUserInput("username")
+        request_name = self.photo
+        info = {"face": request_name}
+        self.sendRequestToFog(template.format(self.id, "login", info))
+        message = self.getReplyFromFog()
+
+        # if success
+        if message["status"] == 0:
+            self.LOGIN = True
+            self.user = message["content"]["userID"]
+
+        # if unknown user
+        elif message["status"] == 1:
+            self._register()
+
+
 
     def _activation(self)-> "status: int":
         while not self.ACTIVATE:
@@ -193,7 +245,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
             except Exception as e:
                 print("Edge Client: An error occurs when talking to the Fog Server. Please restart the Edge Client.")
                 self._log.logger.error(str(e))
-                self._error_log.error(str(e))
+                self._error_log.logger.error(str(e))
             
             self.sendRequestToFog(template.format(self.id, "quit", 0))
             message = self.getReplyFromFog()
@@ -201,7 +253,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
             if message["content"]["msg"] != "Bye " + self.id:
                 print("This device might not quit properly.")
                 self._log.logger.error(self.id + " might not quit properly.")
-                self._error_log.error(self.id + " might not quit properly.")
+                self._error_log.logger.error(self.id + " might not quit properly.")
 
 
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '1.ui'
+# Form implementation generated from reading rpi1 file '1.rpi1'
 #
 # Created by: PyQt5 UI code generator 5.15.0
 #
@@ -17,22 +17,25 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton
 #import edge_ui_11
 
-
-
 import time
 
-from TFLite_detection_face import face_activate
-from Edge_Client_Interface import Edge_Client_Interface
-from speech_rec import voice_recognition
+# from TFLite_detection_face import face_activate
+# from speech_rec import voice_recognition
+
+from Edge_Client_RP1 import Edge_Client_RP1
+SESSION_FILE = "session.json"
+
+
+# debug face
+import face_recognition
+image = face_recognition.load_image_file('FileStorage/sample_image.jpg')
+sample_photo = str(list(face_recognition.face_encodings(image)[0]))
+
 
 class First_UI(QMainWindow):
     def __init__(self):
         super(First_UI, self).__init__()
         self.setupUi()
-
-        self.photo = None
-        self.id = "rpi1_000"
-        
     
     
     def setupUi(self):
@@ -60,7 +63,7 @@ class First_UI(QMainWindow):
         self.Discount = QtWidgets.QLabel(self.centralwidget)
         self.Discount.setGeometry(QtCore.QRect(30, 160, 400, 400))
         self.Discount.setText("")
-        self.Discount.setPixmap(QtGui.QPixmap("./dis.jpg"))
+        self.Discount.setPixmap(QtGui.QPixmap("FileStorage/dis.jpg"))
         self.Discount.setScaledContents(True)
         self.Discount.setObjectName("Discount")
 
@@ -84,39 +87,22 @@ class First_UI(QMainWindow):
     def slot_btn_function(self):
         self.hide()
 #        from TFLite_detection_face import face_activate
-        # request, photo = face_activate()
-        
-        
-        detect_person = True # face recognition here
 
-        #request,self.photo = face_activate()
-        request = "activate_system" # for debug
+        #request, photo = face_activate()
+        request, photo = "activate_system", sample_photo  # for debug
         while request != "activate_system":
             pass
-            #request,self.photo = face_activate()
+            # request, photo = face_activate()
 
+        rpi1 = Edge_Client_RP1(SESSION_FILE)
+        message = rpi1.sendLoginMessage(photo)
 
-        request_name = self.photo
-        info = {"face": request_name}
-        Edge_Client_Interface.sendRequestToFog(template.format(self.id, "login", info))
-        message = Edge_Client_Interface.getReplyFromFog()
-
-        self.username = message["username"]#not sure
-        
-        if  message["status"] == 1:
+        if message["status"] == 1:
             from Edge_ui_11 import ui_1_1
-            self.s = ui_1_1()# register page
+            self.s = ui_1_1()  # register page
             self.s.show()
             
         elif message["status"] == 0:
-            #print("login successfully")
-
-            f = open("id_info.txt","w")
-            for each in [self.photo,self.username]:
-                f.write(f"{each}\n")
-            f.close()
-                
-            
             from Menu import ui_Menu
             self.s = ui_Menu()
             self.s.show()
