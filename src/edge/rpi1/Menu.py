@@ -12,8 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton
 
-import sys
-from Edge_Client_Interface import Edge_Client_Interface
+from Edge_Client_RP1 import Edge_Client_RP1
 
 
 class ui_Menu(QMainWindow):
@@ -113,34 +112,12 @@ class ui_Menu(QMainWindow):
 
         self._scan()
 
-
-
-
-
-        
         from MyCart import ui_Cart
         self.f = ui_Cart()
         self.f.show()
 
     def _scan(self) -> "message_dict":
-        Edge_Client_Interface.sendRequestToFog(template.format(self.id, "activate", {"device": "rpi2_000"}))
-        #  Get the reply.
-        f = open("receipt.txt","w")
-        
-        message = Edge_Client_Interface.getReplyFromFog()
-        if message["status"] == 0:
-            print("Success.")
-            self.cart = message["content"]["item"]
-            self.total_price = message["content"]["price"]
-
-            f.write(f"Total Price: {self.total_price}\n")
-            for key in self.cart:
-                if key != "price":
-                    num   = self.cart[key]["num"]
-                    price = self.cart[key]["price"]
-                    f.write(f"{key}: {num} x ${price}")
-        else:
-            print("Error:", message["content"]["msg"])
-        f.close()
+        rpi1 = Edge_Client_RP1()
+        message = rpi1.scan()
         return message
 

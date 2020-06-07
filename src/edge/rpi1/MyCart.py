@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton
 
-import sys
+import json
 
 class ui_Cart(QMainWindow):
     def __init__(self):
@@ -83,10 +83,17 @@ class ui_Cart(QMainWindow):
         self.Welcome_banner.setText(_translate("MainWindow", "My Cart"))
         self.RETURN.setText(_translate("MainWindow", "Return"))
 
-        f= open("receipt.txt","r")
-        msg = ""
-        for each in f:
-            msg += each 
+
+        data = json.load(open('session.json', 'r', encoding='utf-8'))
+        cart = data["cart"]
+        total_price = data["total_price"]
+        msg = f"Total Price: {total_price}\n"
+
+        for key in cart:
+            num = cart[key]["num"]
+            price = cart[key]["price"]
+            msg += f"{key}: {num} x ${price}\n"
+
         #msg = "Total Price: $14.36\n-------------------\nbottle: 3x$2.3     \napple: 2x$1.0      \npineapple: 1x$3.99 \nbanana: 1x$1.47    \n"
 
         self.label.setText(_translate("MainWindow", msg))

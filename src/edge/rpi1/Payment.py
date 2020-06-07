@@ -12,7 +12,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton
 
-import sys
+import json
 
 class ui_Pay(QMainWindow):
     def __init__(self):
@@ -93,4 +93,7 @@ class ui_Pay(QMainWindow):
         self.Welcome_banner.setText(_translate("MainWindow", "Payment"))
         self.RETURN.setText(_translate("MainWindow", "Return"))
         self.DONE.setText(_translate("MainWindow", "DONE"))
-        self.QR_code.setText(_translate("MainWindow", "QR CODE"))
+
+        data = json.load(open('session.json', 'r', encoding='utf-8'))
+        QR_code = data["QR_code"]
+        self.QR_code.setText(_translate("MainWindow", QR_code))

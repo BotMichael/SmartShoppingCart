@@ -135,7 +135,7 @@ class Fog(threading.Thread):
 
                 self.sendReplyToEdge(frame, message_cloud)
 
-                if message_cloud == "Bye":
+                if message_cloud == {"event": "Quit"}:
                     self._log.write_log("Fog Server: The Cloud Server might not quit properly. Please restart server.")
                     self.disconnetAllFrame()
                     break

@@ -5,9 +5,10 @@ import os
 
 import rsa
 from Cloud_DataParser import Cloud_DataParser
-from get_path import MarketMap
+# from get_path import MarketMap
 from Error_code import *
-# import face_recognition
+import face_recognition
+import numpy as np
 
 from log.Logger import CloudLogger
 
@@ -19,12 +20,12 @@ class Cloud_Computation:
 
         self.parser = Cloud_DataParser()
         self.pos_dict = self.parser.get_pos_dict()
-        self.MarketMap = MarketMap(self.pos_dict)
+        # self.MarketMap = MarketMap(self.pos_dict)
 
         self._log = CloudLogger()
         self._error_log = self._log.error_logger
         self._log.logger.info(str(self.pos_dict))
-        self._log.logger.info(str(self.MarketMap))
+        # self._log.logger.info(str(self.MarketMap))
 
 
 
@@ -44,22 +45,24 @@ class Cloud_Computation:
             return ERR_001, {"msg": ERR_MSG[ERR_003]}
 
 
-    def getRecommandPath(self, userID, password):
-        if not self._log_in(userID, password):
-            return ERR_001, {"msg": ERR_MSG[ERR_001]}
+    # def getRecommandPath(self, userID, password):
+    #     if not self._log_in(userID, password):
+    #         return ERR_001, {"msg": ERR_MSG[ERR_001]}
+    #
+    #     items = self._get_hist(userID)
+    #     if items == []:
+    #         path = self.MarketMap.default_path_to_items()
+    #     else:
+    #         path = self.MarketMap.path_to_items(items)
+    #
+    #     return SUC_000, {'path': path}
 
-        items = self._get_hist(userID)
-        if items == []:
-            path = self.MarketMap.default_path_to_items()
-        else:
-            path = self.MarketMap.path_to_items(items)
 
-        return SUC_000, {'path': path}
-
-
-    def getPath(self, current_position, item):
-        path = self.MarketMap.path_to_item(current_position, item)
-        return SUC_000, {'path': path}
+    def getLocation(self, item):
+        # path = self.MarketMap.path_to_item(current_position, item)
+        if item in self.pos_dict:
+            return SUC_000, {'location': self.pos_dict[item]}
+        return ERR_002, {"msg": ERR_MSG[ERR_002],'location': "None"}
 
 
     def getPrice(self, items):
@@ -71,15 +74,16 @@ class Cloud_Computation:
         if userID != "customer" and not self._log_in(userID, password):
             return ERR_001, {"msg": ERR_MSG[ERR_001]}
 
-        if self._check_out(price):
+        check_out_msg = self._check_out(price)
+        if check_out_msg["status"] != 0:
             return ERR_002, {"msg": ERR_MSG[ERR_002]}
 
-        self._log.logger.info("store: " + store)
+        self._log.logger.info("store: " + str(store))
         if not store:
             userID = "customer"
 
         self._store_shopping(userID, items)
-        return SUC_000, {"msg": ERR_MSG[SUC_000]}
+        return SUC_000, {"QR_code": check_out_msg["QR_code"]}
 
 
     def recogFace(self, face_encoding):
@@ -93,7 +97,7 @@ class Cloud_Computation:
 
     def _recog_face(self, face_encoding):
         known_face_encodings, known_face_names = self.parser.getFaceEncodings()
-        matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+        matches = face_recognition.compare_faces(known_face_encodings, np.array(eval(face_encoding)))
 
         name = "Unknown"
         # If a match was found in known_face_encodings, just use the first one.
@@ -135,7 +139,7 @@ class Cloud_Computation:
 
 
     def _check_out(self, price: str):
-        return 0
+        return {"status": 0, "QR_code": "Not Implemented! Should be a QR_code!"}
 
 
     def _store_shopping(self, userID, items):

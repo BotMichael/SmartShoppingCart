@@ -15,7 +15,6 @@ import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton
-#import edge_ui_11
 
 import time
 
@@ -86,6 +85,8 @@ class First_UI(QMainWindow):
 
     def slot_btn_function(self):
         self.hide()
+
+        from Edge_Client_RP1 import Edge_Client_RP1
 #        from TFLite_detection_face import face_activate
 
         #request, photo = face_activate()
@@ -95,11 +96,11 @@ class First_UI(QMainWindow):
             # request, photo = face_activate()
 
         rpi1 = Edge_Client_RP1(SESSION_FILE)
-        message = rpi1.sendLoginMessage(photo)
-
+        rpi1.init_session()
+        message = rpi1.login(photo)
         if message["status"] == 1:
-            from Edge_ui_11 import ui_1_1
-            self.s = ui_1_1()  # register page
+            from Edge_register import Edge_register
+            self.s = Edge_register()  # register page
             self.s.show()
             
         elif message["status"] == 0:

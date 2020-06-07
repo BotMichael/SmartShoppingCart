@@ -58,11 +58,10 @@ class Cloud_Server:
             return template.format("register", status, content)
 
 
-        elif msg["event"] == "path":
-            current_position = msg["content"]["current_position"]
+        elif msg["event"] == "location":
             item = msg["content"]["item"]
-            status, content = self.computation.getPath(current_position, item)
-            return template.format("path", status, content)
+            status, content = self.computation.getLocation(item)
+            return template.format("location", status, content)
 
 
         elif msg["event"] == "scan":

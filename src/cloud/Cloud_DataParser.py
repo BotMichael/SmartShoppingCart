@@ -4,7 +4,7 @@ import os
 from generate_key import generate_rsa_key
 import rsa
 from datetime import datetime
-
+import numpy as np
 from collections import defaultdict
 
 import pymysql
@@ -203,7 +203,7 @@ class Cloud_DataParser:
             names = []
             for line in f:
                 line = line.strip().split('|')
-                faces.append(line[0])
+                faces.append(np.array(eval(line[0])))
                 names.append(line[1])
             return faces, names
 

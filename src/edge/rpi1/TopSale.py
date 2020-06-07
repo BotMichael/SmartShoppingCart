@@ -52,7 +52,7 @@ class ui_Top_Sale(QMainWindow):
         self.label = QtWidgets.QLabel(self.scrollAreaWidgetContents)
         self.label.setGeometry(QtCore.QRect(-10, -30, 400, 1000))
         self.label.setText("")
-        self.label.setPixmap(QtGui.QPixmap("src/edge/rpi1/FileStorage/top_sale.jpg"))
+        self.label.setPixmap(QtGui.QPixmap("FileStorage/top_sale.jpg"))
         self.label.setScaledContents(True)
         self.label.setObjectName("label")
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)

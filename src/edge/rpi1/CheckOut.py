@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton
 
-import sys
+from Edge_Client_RP1 import Edge_Client_RP1
 
 
 class ui_Checkout(QMainWindow):
@@ -179,17 +179,11 @@ class ui_Checkout(QMainWindow):
         self.NUM_9.clicked.connect(self.slot_btn_NUM_9_function)
 
     def slot_btn_PAY_function(self):
-        f = open("id_info.txt","w")
-        it = iter(f)
-         
-        self.photo = next(it).rstrip()
-        self.username = next(it).rstrip()
-        for each in [self.photo,self.username]:
-                f.write(f"{each}\n")
-        f.close()
-        
-        correct_password = self.password=="123" # check with cloud here
-        if correct_password:
+        rpi1 = Edge_Client_RP1()
+        rpi1.scan()
+
+        msg = rpi1.checkout(self.password)
+        if msg["status"] == 0:
             self.hide()
             from Payment import ui_Pay
             self.f = ui_Pay()

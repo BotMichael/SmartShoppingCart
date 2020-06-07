@@ -71,7 +71,7 @@ class First_UI(QMainWindow):
         detect_person = True # face recognition here
         
         if not detect_person:
-            from Edge_ui_11 import ui_1_1
+            from Edge_register import ui_1_1
             self.s = ui_1_1()
             self.s.show()
         else:

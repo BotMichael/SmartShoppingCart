@@ -60,7 +60,7 @@ class Edge_Client_Interface:
 
 
     def __del__(self):
-        self._log.logger.info("Edge client " + self.id + " terminates. ")
+        # self._log.logger.info("Edge client " + self.id + " terminates. ")
         self.socket.setsockopt(zmq.LINGER, 0)
         self.socket.close()
         self.context.term()

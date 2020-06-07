@@ -18,9 +18,9 @@ from Main import First_UI
 import time
 
 
-class ui_1_1(QMainWindow):
+class Edge_register(QMainWindow):
     def __init__(self):
-        super(ui_1_1, self).__init__()
+        super(Edge_register, self).__init__()
         self.init_ui()
  
     def init_ui(self):
