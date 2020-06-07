@@ -4,13 +4,20 @@
 '''
 
 
-from TFLite_detection_face import face_activate
+# from TFLite_detection_face import face_activate
 from Edge_Client_Interface import Edge_Client_Interface
-from speech_rec import voice_recognition
+# from speech_rec import voice_recognition
 
 import time
 template = '{{ "device": "{}", "event": "{}", "content" : {} }}'
 valid_request = {"find path", "checkout", "quit", "price"}
+
+
+# debug face
+import face_recognition
+image = face_recognition.load_image_file('sample_image.jpg')
+sampe_photo = str(list(face_recognition.face_encodings(image)[0]))
+
 
 class Edge_Client_RP1(Edge_Client_Interface):
     def __init__(self):
@@ -20,17 +27,21 @@ class Edge_Client_RP1(Edge_Client_Interface):
         self.user = "customer"
         self.cart = {}
         self.total_price = 0
-        self.photo = None
+        self.photo = sampe_photo
         self.pw = None
 
 
     def _getUserInput(self, subject: str, extra = "") -> str:
-        result = voice_recognition() #str(input("Please type your " + subject + " " + extra + ": "))
+        # result = voice_recognition()
+        # while(result == ""):
+        #     result = voice_recognition()
+        # return result
+        result = str(input("Please type your " + subject + " " + extra + ": "))
         while(result == ""):
-            result = voice_recognition()# str(input(subject + " can't be empty. Please retype your " + subject + ": "))
+            result = str(input(subject + " can't be empty. Please retype your " + subject + ": "))
         return result
 
-    
+
     def _register(self) -> ("register_status", "message_dict / str"):
         '''
         @return:
@@ -211,6 +222,7 @@ class Edge_Client_RP1(Edge_Client_Interface):
             try:
                 while (request in valid_request):
                     if request == "quit":
+                        self.sendRequestToFog(template.format(self.id, "quit", 0))
                         break
 
                     elif request == "price":

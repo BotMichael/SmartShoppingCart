@@ -3,8 +3,8 @@
 import zmq
 import rsa
 
-from . import Global_Var
-from .Logger import EdgeLogger, ErrorLogger
+import Global_Var
+from Logger import EdgeLogger, ErrorLogger
 
 
 template = '{{ "device": "{}", "event": "{}", "content" : {} }}'

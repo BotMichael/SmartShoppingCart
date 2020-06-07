@@ -1,14 +1,19 @@
 # Fog.py
 
 import zmq
-
 import Global_Var
 from log.Logger import FogLogger, ErrorLogger
 
-template = '{{ "status": {}, "event": "{}", "content" : {} }}'
+import tkinter as tk
+import threading
 
-class Fog:
-    def __init__(self):
+template = '{{ "status": {}, "event": "{}", "content" : {} }}'
+active_color = 'chartreuse3'
+idle_color = 'dark slate gray'
+
+
+class Fog(threading.Thread):
+    def __init__(self, tk_root):
         self._log = FogLogger()
         self._error_log = ErrorLogger()
         self._log.logger.info("Fog Server starts. Fog Client starts.")
@@ -28,8 +33,21 @@ class Fog:
         self.backend.bind("tcp://*:%s" % Global_Var.FOG_PORT)
         self._log.logger.info("Backend (edge) bind port: tcp://*:%s" % Global_Var.FOG_PORT)
 
-        self.frames = {}
-        self.frame_pair = {}
+        #### devices
+        self.frames = {}  # frame : bool
+        self.frame_pair = {}  # frame1 : frame2
+
+        ####
+        # UI
+        self.ROOT = tk_root
+        self.frame_labels = {}  # frame : label
+        self.colors = {True: active_color, False: idle_color}
+        self._prepare_ui()
+
+        # start thread
+        threading.Thread.__init__(self)
+        self.start()
+
 
     def sendReplyToEdge(self, frame: str, reply: str):
         reply = str(reply)
@@ -72,20 +90,21 @@ class Fog:
         for f in self.frames:
             if self.frames[f]:
                 self.sendReplyToEdge(f, template.format(-1, "quit", {"msg": "Bye "+f} ))
+                self.frames[f] = False
 
 
-
-    ## TODO: make it security & reliable
     def run(self):
         while True:
             try:
+                self.update_ui()
+
                 # Receive message from the Edge first
                 frame, message_edge = self.getRequestFromEdge()
 
                 if message_edge["event"] == "quit":
                     message_to_edge = template.format(0, "quit", {"msg": "Bye " + frame})
                     self.sendReplyToEdge(frame, message_to_edge)
-                    del self.frames[frame]
+                    self.frames[frame] = False
                     continue
 
                 if message_edge == None:
@@ -108,7 +127,11 @@ class Fog:
                 message_cloud = self.getReplyFromCloud()
                 if message_cloud["event"] == "scan":
                     self.sendReplyToEdge(self.frame_pair[frame], message_cloud)
+                    self.frames[frame] = False
                     continue
+
+                elif message_cloud["event"] == "checkout" and message_cloud["status"] == 0:
+                    self.frames[frame] = False
 
                 self.sendReplyToEdge(frame, message_cloud)
 
@@ -125,6 +148,55 @@ class Fog:
                 break
 
 
+    ####
+    # UI part
+    ####
+    def _update_frame(self):
+        for frame in self.frames:
+            if frame not in self.frame_labels:
+                self.frame_labels[frame] = tk.Label(self.ROOT, text=frame,
+                                                    bg=self.colors[self.frames[frame]], font=('Arial', 12),
+                                                    width=15, height=2)
+            else:
+                self.frame_labels[frame].configure(bg=self.colors[self.frames[frame]])
+            self.frame_labels[frame].pack()
+
+    def _prepare_ui(self):
+        # Root
+        self.ROOT.title("Device Monitor")
+        self.ROOT.geometry("300x400")
+
+        # top frame
+        frm = tk.Frame(self.ROOT)
+        frm.pack()
+
+        frm_l = tk.Frame(frm)
+        frm_r = tk.Frame(frm)
+        frm_l.pack(side='left')
+        frm_r.pack(side='right')
+
+        # Button to refresh
+        b = tk.Button(frm_l,
+                      text='Refresh',  # 显示在按钮上的文字
+                      width=15, height=2,
+                      command=self._update_frame)  # 点击按钮式执行的命令
+        b.pack()  # 按钮位置
+
+        # Labels for status
+        idle_label = tk.Label(frm_r, text="idle",
+                              bg=idle_color, font=('Arial', 10),
+                              width=20, height=1)
+        idle_label.pack()
+
+        active_label = tk.Label(frm_r, text="activated",
+                                bg=active_color, font=('Arial', 10),
+                                width=20, height=1)
+        active_label.pack()
+
+
+    def update_ui(self):
+        self._update_frame()
+        self.ROOT.update()
 
     def __del__(self):
         self._log.logger.info("Fog Server terminates. Fog Client terminates.")
@@ -136,6 +208,10 @@ class Fog:
 
 
 
+
+
 if __name__ == "__main__":
-    fog = Fog()
-    fog.run()
+    ROOT = tk.Tk()
+    fog = Fog(ROOT)
+    ROOT.mainloop()
+    fog.join()
