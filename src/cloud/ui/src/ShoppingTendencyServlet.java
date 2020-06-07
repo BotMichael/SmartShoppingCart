@@ -26,7 +26,7 @@ public class ShoppingTendencyServlet extends HttpServlet {
 		try {
 			Connection dbcon = dataSource.getConnection();
 
-			String query = "select item, count(*) coun from shopping_history group by item order by coun asc;";
+			String query = "select item, sum(num) as total_num from shopping_history group by item order by total_num asc;";
 
 			PreparedStatement statement = dbcon.prepareStatement(query);
 			ResultSet rs = statement.executeQuery();
@@ -38,7 +38,7 @@ public class ShoppingTendencyServlet extends HttpServlet {
 
 			while (rs.next()) {
 				item.add(rs.getString("item"));
-				int item_count = Integer.parseInt(rs.getString("coun"));
+				int item_count = Integer.parseInt(rs.getString("total_num"));
 				coun.add(item_count);
 				total += item_count;
 			}
