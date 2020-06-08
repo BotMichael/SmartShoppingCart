@@ -1,1 +1,1 @@
-{"LOGIN": true, "user": "9497351456", "cart": {}, "total_price": 0, "QR_code": "Empty QR_code"}
+{"LOGIN": true, "user": "9497351456", "cart": {"apple": {"num": 3, "price": 1.0}, "orange": {"num": 1, "price": 4.99}}, "total_price": 7.99, "QR_code": "Not Implemented! Should be a QR_code!"}
