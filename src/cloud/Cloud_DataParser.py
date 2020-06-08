@@ -225,6 +225,9 @@ class Cloud_DataParser:
                 names.append(line[1])
             return faces, names
 
+    def updateFaceEncoding(self, photo, userID):
+        with open(Face_file) as f:
+            f.write(str(photo)+'|'+str(userID)+'\n')
 
     def _parser(self, filename: str) -> dict:
         result = dict()

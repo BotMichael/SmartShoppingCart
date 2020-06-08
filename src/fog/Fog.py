@@ -178,10 +178,10 @@ class Fog(threading.Thread):
 
         # Button to refresh
         b = tk.Button(frm_l,
-                      text='Refresh',  # 显示在按钮上的文字
+                      text='Refresh',
                       width=15, height=2,
-                      command=self._update_frame)  # 点击按钮式执行的命令
-        b.pack()  # 按钮位置
+                      command=self._update_frame)
+        b.pack()
 
         # Labels for status
         idle_label = tk.Label(frm_r, text="idle",

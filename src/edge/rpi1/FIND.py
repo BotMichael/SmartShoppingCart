@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton
 
 # from TFLite_detection_face import face_activate
 from Edge_Client_RP1 import Edge_Client_RP1
-# from speech_rec import voice_recognition
+from speech_rec import voice_recognition
 
 
 class ui_Find_Item(QMainWindow):
@@ -78,14 +78,16 @@ class ui_Find_Item(QMainWindow):
     def slot_btn_ITEM_function(self):
         print("record audio here")# add speech recognition here
 
-        # item = self._getUserAudioInput()
-        item = "water"
+        item = self._getUserAudioInput()
+        # item = "water"
 
         rpi1 = Edge_Client_RP1()
         message = rpi1.getItem(item)
         if message["status"] == 0:
             # item name, region, price
-            item_info = "heard APPLE\n Region A\n $5 per each" # default 
+            region = message["content"]["location"]
+            price = message["content"]["price"]
+            item_info = f"heard {item}\n Region {region}\n ${price} per each" # default
         else:
             item_info = message["content"]["msg"]
             print("Error:", message["content"]["msg"])
@@ -128,10 +130,3 @@ class ui_Find_Item(QMainWindow):
         msg = "please click\nITEM and then\ntell us what\nyou are finding"
         self.INFO.setText(_translate("MainWindow", msg))
 
-##    def parse(self,sentence):
-##        s=""
-##        for i in range(len(sentence)):
-##            s+=sentence[i]
-##            if i%20==9:
-##                s+="\n"
-##        return s

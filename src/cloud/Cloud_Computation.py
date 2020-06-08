@@ -37,11 +37,11 @@ class Cloud_Computation:
         if self.parser.has_user(userID):
             return ERR_001, {"msg": ERR_MSG[ERR_003]}
 
-        # TODO: save photo
         pw = self._rsa_decrypt(eval(password))
         i = self.parser.update_user(userID, pw)
         if i == 0:
             return SUC_000, {"msg": ERR_MSG[SUC_000]}
+            self.parser.updateFaceEncoding(photo, userID)
         else:
             return ERR_001, {"msg": ERR_MSG[ERR_003]}
 
@@ -62,7 +62,9 @@ class Cloud_Computation:
     def getLocation(self, item):
         # path = self.MarketMap.path_to_item(current_position, item)
         if item in self.pos_dict:
-            return SUC_000, {'location': self.pos_dict[item]}
+            location = self.pos_dict[item]
+            price = self.parser.get_item_info(item.lower())
+            return SUC_000, {'location': location, "price": price}
         return ERR_002, {"msg": ERR_MSG[ERR_002],'location': "None"}
 
 
