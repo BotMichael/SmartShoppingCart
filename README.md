@@ -28,21 +28,28 @@ Outline:
 
 Process:  
 1. start cloud
+
     ```python3 Cloud_server.py```
+    
 2. start fog
+
     ```python3 fog.py```
+    
 3. start edge device
     - RP1  
         * Detect Person to activate system 
         * User inputs ID and Password and 
         * Cloud confirms and returns price & region info for price
         * provide interactions  
+        
         ```python3 main.py```
+        
     - RP2
         * [responsible for check-out]
         * wait cloud's signal
         * scan shopping cart
         * return list of items and count for each item
+        
         ```python3 Edge_Client_RP2.py```
 
 
