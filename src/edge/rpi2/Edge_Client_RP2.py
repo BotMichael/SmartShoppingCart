@@ -18,7 +18,9 @@ class Edge_Client_RP2(Edge_Client_Interface):
                 message = self.getReplyFromFog()
                 if (message["event"] == "activate"):
                     # send request
-                    request = template.format(self.id, "scan", {"item": {"Apple": 3, "Orange": 1}}) # get_item_dictionary()})
+                    item = {"bottle": 3, "apple": 2, "pineapple": 1, "banana": 1}
+                    # item = get_item_dictionary() # TODO : import from where???
+                    request = template.format(self.id, "scan", {"item": item})
                     self.sendRequestToFog(request)
 
             except Exception as e:
