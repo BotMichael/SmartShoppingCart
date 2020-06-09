@@ -182,9 +182,12 @@ class Cloud_DataParser:
         total = 0
         info = \
 """
+Thank you for shopping!
+------------------------
         Receipt
 ------------------------
 """
+        receipt = ""
         
         for t in hist[1:]:
             item = t[0].lower()
@@ -198,7 +201,7 @@ class Cloud_DataParser:
             reply = self.cursor.execute( insert_query )
             if reply == 1:  # success
                 self.conn.commit()
-                info += item.capitalize() + " x $" + str(t[1]) + "\n"
+                receipt += item.capitalize() + ": " + str(t[1]) + " x $" + str(self.get_item_info(item)) + "\n"
                 total += t[1]
             else:
                 error_msg = "Fail to update user history: {phone_num}, {item_name}, {num}.".format(
@@ -206,10 +209,10 @@ class Cloud_DataParser:
                 self._error_log.error(error_msg)
                 return (1, error_msg)
                 
-        info += "------------------------\n"
-        info += "Total: $" + str(total) + "\n"
-        info += "Thank you for shopping!"
 
+        info += "Total: $" + str(total) + "\n"
+        info += "------------------------\n"
+        info += receipt
         self._send_SMS(phone, info)
         return (0, "")
             
