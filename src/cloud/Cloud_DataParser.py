@@ -202,7 +202,7 @@ Thank you for shopping!
             if reply == 1:  # success
                 self.conn.commit()
                 receipt += item.capitalize() + ": " + str(t[1]) + " x $" + str(self.get_item_info(item)) + "\n"
-                total += t[1]
+                total += float(self.get_item_info(item))
             else:
                 error_msg = "Fail to update user history: {phone_num}, {item_name}, {num}.".format(
                                 phone_num = phone, item_name = t[0], num = t[1])
